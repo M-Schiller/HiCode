@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -24,7 +23,6 @@
 
 **********************************************************************************/
 
-
 #ifndef TREEDATAWRITER_H_
 #define TREEDATAWRITER_H_
 #include <iostream>
@@ -33,17 +31,16 @@
 class TreeDataWriter
 {
 public:
-	typedef unsigned int uint;
+  typedef unsigned int uint;
 
-	TreeDataWriter(const TreeData&);
+  TreeDataWriter(const TreeData&);
 
-	void writeTree(std::ostream& out, bool collapseLeafs = false);
-	void writeTopGraph(std::ostream&);
-	void writeLeafNodes(std::ostream&);
+  void writeTree(std::ostream& out, bool collapseLeafs = false);
+  void writeTopGraph(std::ostream&);
+  void writeLeafNodes(std::ostream&);
 
 private:
-	const TreeData& m_tree;
-
+  const TreeData& m_tree;
 };
 
 #endif /* TREEDATAWRITER_H_ */

@@ -1,22 +1,22 @@
 // File: graph_binary.cpp
 // -- graph handling source
 //-----------------------------------------------------------------------------
-// Community detection 
+// Community detection
 // Based on the article "Fast unfolding of community hierarchies in large networks"
 // Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
 //
 // This file is part of Louvain algorithm.
-// 
+//
 // Louvain algorithm is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Louvain algorithm is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Louvain algorithm.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------------------------------------------------------------------
@@ -30,134 +30,146 @@
 #include <sys/mman.h>
 #include <fstream>
 #include "graph_binary.h"
-#include "math.h"
+#include "cmath"
 
-Graph::Graph() {
-  nb_nodes     = 0;
-  nb_links     = 0;
-  total_weight = 0;
+Graph::Graph()
+  : nb_nodes(0)
+  , nb_links(0)
+  , total_weight(0)
+{
 }
 
-Graph::Graph(char *filename, char *filename_w, int type) {
-  ifstream finput;
-  finput.open(filename,fstream::in | fstream::binary);
+Graph::Graph(char *filename, char *filename_w, int type)
+{
+  std::ifstream finput;
+  finput.open(filename, std::fstream::in | std::fstream::binary);
 
   // Read number of nodes on 4 bytes
   finput.read((char *)&nb_nodes, 4);
-  assert(finput.rdstate() == ios::goodbit);
+  assert(finput.rdstate() == std::ios::goodbit);
 
   // Read cumulative degree sequence: 8 bytes for each node
   // cum_degree[0]=degree(0); cum_degree[1]=degree(0)+degree(1), etc.
   degrees.resize(nb_nodes);
-  finput.read((char *)&degrees[0], nb_nodes*8);
+  finput.read((char *)&degrees[0], nb_nodes * 8);
 
   // Read links: 4 bytes for each link (each link is counted twice)
-  nb_links=degrees[nb_nodes-1];
+  nb_links = degrees[nb_nodes - 1];
   links.resize(nb_links);
-  finput.read((char *)(&links[0]), (long)nb_links*8);  
+  finput.read((char *)(&links[0]), (long)nb_links * 8);
 
   // IF WEIGHTED : read weights: 4 bytes for each link (each link is counted twice)
   weights.resize(0);
-  total_weight=0;
-  if (type==WEIGHTED) {
-    ifstream finput_w;
-    finput_w.open(filename_w,fstream::in | fstream::binary);
+  total_weight = 0;
+
+  if (type == WEIGHTED)
+  {
+    std::ifstream finput_w;
+    finput_w.open(filename_w, std::fstream::in | std::fstream::binary);
     weights.resize(nb_links);
-    finput_w.read((char *)&weights[0], (long)nb_links*4);  
-  }    
+    finput_w.read((char *)&weights[0], (long)nb_links * 4);
+  }
 
   // Compute total weight
-  for (unsigned int i=0 ; i<nb_nodes ; i++) {
-    total_weight += (double)weighted_degree(i);
+  for (unsigned int i = 0; i < nb_nodes; i++)
+  {
+    total_weight += getWeightedDegree(i);
   }
 }
 
-Graph::Graph(int n, int m, double t, int *d, int *l, float *w) {
-/*  nb_nodes     = n;
-  nb_links     = m;
-  total_weight = t;
-  degrees      = d;
-  links        = l;
-  weights      = w;*/
+Graph::Graph(int n, int m, double t, int *d, int *l, float *w)
+{
+  /*  nb_nodes     = n;
+    nb_links     = m;
+    total_weight = t;
+    degrees      = d;
+    links        = l;
+    weights      = w;*/
 }
 
-
-void
-Graph::display() {
-/*  for (unsigned int node=0 ; node<nb_nodes ; node++) {
-    pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
-    for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
-      if (node<=*(p.first+i)) {
-	if (weights.size()!=0)
-	  cout << node << " " << *(p.first+i) << " " << *(p.second+i) << endl;
-	else
-	  cout << node << " " << *(p.first+i) << endl;
+void Graph::display()
+{
+  /*  for (unsigned int node=0 ; node<nb_nodes ; node++) {
+      pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
+      for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
+        if (node<=*(p.first+i)) {
+    if (weights.size()!=0)
+      std::cout << node << " " << *(p.first+i) << " " << *(p.second+i) << endl;
+    else
+      std::cout << node << " " << *(p.first+i) << endl;
+        }
       }
-    }   
-  }*/
-  for (unsigned int node=0 ; node<nb_nodes ; node++) {
-    pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
-    cout << node << ":" ;
-    for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
-      if (true) {
-	if (weights.size()!=0)
-	  cout << " (" << *(p.first+i) << " " << *(p.second+i) << ")";
-	else
-	  cout << " " << *(p.first+i);
-      }
+    }*/
+  for (unsigned int node = 0; node < nb_nodes; node++)
+  {
+    std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator > p = neighbors(node);
+    std::cout << node << ":";
+    for (unsigned int i = 0; i < getDegree(node); i++)
+    {
+      if (weights.size() != 0)
+        std::cout << " (" << *(p.first + i) << " " << *(p.second + i) << ")";
+      else
+        std::cout << " " << *(p.first + i);
     }
-    cout << endl;
+    std::cout << std::endl;
   }
 }
 
-void
-Graph::display_reverse() {
-  for (unsigned int node=0 ; node<nb_nodes ; node++) {
-    pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
-    for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
-      if (node>*(p.first+i)) {
-	if (weights.size()!=0)
-	  cout << *(p.first+i) << " " << node << " " << *(p.second+i) << endl;
-	else
-	  cout << *(p.first+i) << " " << node << endl;
-      }
-    }   
-  }
-}
-
-
-bool
-Graph::check_symmetry() {
-  int error=0;
-  for (unsigned int node=0 ; node<nb_nodes ; node++) {
-    pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
-    for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
-      unsigned int neigh = *(p.first+i);
-      float weight = *(p.second+i);
-      
-      pair<vector<unsigned int>::iterator, vector<float>::iterator > p_neigh = neighbors(neigh);
-      for (unsigned int j=0 ; j<nb_neighbors(neigh) ; j++) {
-	unsigned int neigh_neigh = *(p_neigh.first+j);
-	float neigh_weight = *(p_neigh.second+j);
-
-	if (node==neigh_neigh && weight!=neigh_weight) {
-	  cout << node << " " << neigh << " " << weight << " " << neigh_weight << endl;
-	  if (error++==10)
-	    exit(0);
-	}
+void Graph::display_reverse()
+{
+  for (unsigned int node = 0; node < nb_nodes; node++)
+  {
+    std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator> p = neighbors(node);
+    for (unsigned int i = 0; i < getDegree(node); i++)
+    {
+      if (node > *(p.first + i))
+      {
+        if (weights.size() != 0)
+          std::cout << *(p.first + i) << " " << node << " " << *(p.second + i) << std::endl;
+        else
+          std::cout << *(p.first + i) << " " << node << std::endl;
       }
     }
   }
-  return (error==0);
 }
 
+bool Graph::check_symmetry()
+{
+  int error = 0;
+  for (unsigned int node = 0; node < nb_nodes; node++)
+  {
+    std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator > p = neighbors(node);
+    for (unsigned int i = 0; i < getDegree(node); i++)
+    {
+      const unsigned int neigh = *(p.first + i);
+      const float weight = *(p.second + i);
 
-void
-Graph::display_binary(char *outfile) {
-  ofstream foutput;
-  foutput.open(outfile ,fstream::out | fstream::binary);
+      std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator > p_neigh = neighbors(neigh);
+      for (unsigned int j = 0; j < getDegree(neigh); j++)
+      {
+        unsigned int neigh_neigh = *(p_neigh.first + j);
+        float neigh_weight = *(p_neigh.second + j);
 
-  foutput.write((char *)(&nb_nodes),4);
-  foutput.write((char *)(&degrees[0]),4*nb_nodes);
-  foutput.write((char *)(&links[0]),8*nb_links);
+        if (node == neigh_neigh && weight != neigh_weight)
+        {
+          std::cout << node << " " << neigh << " " << weight << " " << neigh_weight << std::endl;
+          if (error++ == 10)
+          {
+            exit(0);
+          }
+        }
+      }
+    }
+  }
+  return (error == 0);
+}
+
+void Graph::display_binary(char *outfile)
+{
+  std::ofstream foutput;
+  foutput.open(outfile, std::fstream::out | std::fstream::binary);
+
+  foutput.write((char *)(&nb_nodes), 4);
+  foutput.write((char *)(&degrees[0]), 4 * nb_nodes);
+  foutput.write((char *)(&links[0]), 8 * nb_links);
 }

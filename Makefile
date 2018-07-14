@@ -1,4 +1,4 @@
 
 Main: code/main.cpp
-	g++ -std=c++11 code/main.cpp -o Main -O2 
+	g++ -std=c++1z code/main.cpp -o Main -O2 
 

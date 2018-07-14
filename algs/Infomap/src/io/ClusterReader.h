@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -23,10 +22,11 @@
  along with Infomap software package.  If not, see <http://www.gnu.org/licenses/>.
 
 **********************************************************************************/
-
+#pragma once
 
 #ifndef CLUSTERREADER_H_
 #define CLUSTERREADER_H_
+
 #include <vector>
 #include <string>
 using std::string;
@@ -34,20 +34,18 @@ using std::string;
 class ClusterReader
 {
 public:
-	ClusterReader(unsigned int numNodes);
-	~ClusterReader();
+  ClusterReader(unsigned int numNodes);
+  ~ClusterReader();
 
-	void readData(const string filename);
+  void readData(std::string filename);
 
-	const std::vector<unsigned int>& getClusterData() const
-	{
-		return m_clusterData;
-	}
+  const std::vector<unsigned int>& getClusterData() const
+  {
+    return m_clusterData;
+  }
 
 private:
-	std::vector<unsigned int> m_clusterData;
+  std::vector<unsigned int> m_clusterData;
 };
-
-
 
 #endif /* CLUSTERREADER_H_ */

@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -24,15 +23,11 @@
 
 **********************************************************************************/
 
-
 #include "InfomapDirected.h"
 
 InfomapDirected::InfomapDirected(const Config& conf)
-:	InfomapGreedy<InfomapDirected>(conf),
- 	alpha(conf.teleportationProbability),
- 	beta(1.0-alpha)
- 	{
- 	}
-
-
-
+  : InfomapGreedy<InfomapDirected>(conf)
+  , alpha(conf.teleportationProbability)
+  , beta(1.0 - alpha)
+{
+}

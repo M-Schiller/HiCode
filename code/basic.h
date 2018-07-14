@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef BASIC_H
+#define BASIC_H
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -5,300 +10,308 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 #include <queue>
 #include <set>
 #include <map>
+#include <numeric>
 #include <sstream>
 #include <cctype>
 #include <fstream>
-using namespace std;
 
 #define lowbit(x) ((x)&(-(x)))
 #define sqr(x) ((x)*(x))
-#define PB push_back
-#define MP make_pair
-#define TVVS vector<vector<string> >
 
 template <typename T>
-vector<int> sort_indexes(const vector<T> &v) {
+std::vector<int> sort_indexes(const std::vector<T> &v) {
+  // initialize original index locations
+  std::vector<int> idx(v.size());
+  std::iota(idx.begin(), idx.end(), 0);
 
-	// initialize original index locations
-  	vector<int> idx(v.size());
-  	iota( idx.begin(), idx.end(), 0 );
-
-  	// sort indexes based on comparing values in v
-  	if (config.find("ReduceFirst")!=config.end())
+  // sort indexes based on comparing values in v
+  if (config.find("ReduceFirst") != config.end())
+  {
+    if (config["ReduceFirst"] == "MIN")
     {
-    	if (config["ReduceFirst"]=="MIN")
-  			sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] < v[i2];});
-		else if (config["ReduceFirst"]=="MAX")
-			sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] > v[i2];});
-		else
-		{
-			cout<<"error parameter with ReduceFirst"<<endl;
-			exit(-1);		
-		}	
-	}
-	else
-		sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] > v[i2];});
-
-	return idx;
-}
-
-bool checkRequiredFile(string filename)
-{
-    FILE* fin=fopen(filename.c_str(),"r");
-    if (fin==NULL)
-    {
-        system(("make "+filename).c_str());
-        fin=fopen(filename.c_str(),"r");
-        if (fin==NULL)
-        {
-            fprintf(stderr,"FILE %s NOT EXIST, AND FAIL TO MAKE\n",filename.c_str());
-            return false;
-        }
+      sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] < v[i2]; });
     }
-    fclose(fin);
-    return true;
+    else if (config["ReduceFirst"] == "MAX")
+    {
+      sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] > v[i2]; });
+    }
+    else
+    {
+      std::cout << "error parameter with ReduceFirst" << std::endl;
+      exit(-1);
+    }
+  }
+  else
+  {
+    std::sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] > v[i2]; });
+  }
+
+  return idx;
 }
-bool checkFileExist(string filename)
+
+inline bool checkRequiredFile(const std::string& filename)
 {
-    FILE* fin=fopen(filename.c_str(),"r");
-    if (fin==NULL) return false;
-    fclose(fin);
-    return true;
+  std::ifstream f(filename, std::fstream::in | std::fstream::trunc);
+  if (!f.good())
+  {
+    std::cerr << "FILE " << filename << " DOES NOT EXIST AND FAILED TO CREATE IT" << std::endl;
+  }
+  return f.good();
 }
-string int2str(int i)
+
+inline bool checkFileExist(const std::string& filename)
 {
-    char s[100];
-    sprintf(s,"%d",i);
-    return s;
+  std::ifstream f(filename);
+  return f.good();
 }
-string double2str(double v)
+
+inline std::string int2str(int i)
 {
-    char s[100];
-    sprintf(s,"%.6f",v);
-    return s;
+  return std::to_string(i);
 }
-double str2double(string s)
+
+inline std::string double2str(double v)
 {
-    char ts[1000];
-    sprintf(ts,"%s",s.c_str());
-    double v;
-    sscanf(ts,"%lf",&v);
-    return v;
+  char s[100];
+  std::snprintf(s, sizeof s, "%.6f", v);
+  return s;
 }
-void systemCall(string cmd)
+
+inline double str2double(const std::string& s)
 {
-    fprintf(stderr,"Call : %s\n",cmd.c_str());
-    system(cmd.c_str());
+  return std::stod(s);
+}
+
+inline void systemCall(const std::string& cmd)
+{
+  std::cerr << "Call " << cmd;
+  int res = system(cmd.c_str());
+  std::cerr << " returned " << res << "." << std::endl;
 }
 
 //返回l到r之间的随机数
-double getRand(double l=0,double r=1)
+inline double getRand(double l = 0, double r = 1)
 {
-    return (rand()%1000000/1000000.)*(r-l)+l;
+  return (rand() % 1000000 / 1000000.) * (r - l) + l;
 }
 
-string escape(string s)
+inline std::string escape(const std::string& s)
 {
-    string t="";
-    for (int i=0; i<s.size(); i++)
+  std::string t;
+  for (int i = 0; i < s.size(); i++)
+  {
+    if (s[i] == '\\'
+      || s[i] == '_'
+      || s[i] == '#')
     {
-        if (s[i]=='\\'||s[i]=='_'||s[i]=='#')
-            t=t+"\\";
-        t=t+s[i];
+      t = t + "\\";
     }
-    return t;
+    t = t + s[i];
+  }
+  return t;
 }
 
-void mergeMSS(map<string,string> &a,map<string,string> b)
+inline void mergeMSS(std::map<std::string, std::string> &a, std::map<std::string, std::string> b)
 {
-    for (map<string,string>::iterator itr=b.begin(); itr!=b.end(); itr++)
-        a[itr->first]=itr->second;
-}
-void mergeVSS(vector<pair<string,string> >&a,vector<pair<string,string> > b)
-{
-    for (int i=0; i<b.size(); i++)
-        a.PB(b[i]);
+  for (auto& itr : b)
+  {
+    a[itr.first] = itr.second;
+  }
 }
 
-double getAverage(vector<double> d)
+inline void mergeVSS(std::vector<std::pair<std::string, std::string>>&a, std::vector<std::pair<std::string, std::string>> b)
 {
-    double s=0;
-    for (int i=0; i<d.size(); i++)
-        s+=d[i];
-    return s/d.size();
+  a.insert(a.end(), b.begin(), b.end());
 }
 
-vector<vector<string> > VSS2VVS(vector<pair<string,string> > data)
+inline double getAverage(std::vector<double> d)
 {
-    vector<vector<string> > table;
-    table.clear();
-    for (int i=0; i<data.size(); i++)
+  return std::accumulate(d.begin(), d.end(), 0.0) / d.size();
+}
+
+inline std::vector<std::vector<std::string>> VSS2VVS(std::vector<std::pair<std::string, std::string>> data)
+{
+  std::vector<std::vector<std::string>> table;
+  for (auto& i : data)
+  {
+    std::vector<std::string> row;
+    row.push_back(i.first);
+    row.push_back(i.second);
+    table.push_back(row);
+  }
+  return table;
+}
+
+inline std::vector<std::vector<std::string>> transVVS(std::vector<std::vector<std::string>> data)
+{
+  std::vector<std::vector<std::string>> newData;
+  for (int i = 0; i < data[0].size(); i++)
+  {
+    std::vector<std::string> row;
+    for (int j = 0; j < data.size(); j++)
     {
-        vector<string> row;
-        row.clear();
-        row.PB(data[i].first);
-        row.PB(data[i].second);
-        table.PB(row);
+      row.push_back(data[j][i]);
     }
-    return table;
+    newData.push_back(row);
+  }
+  return newData;
 }
 
-vector<vector<string> > transVVS(vector<vector<string> > data)
+inline void Tex_Table(std::vector<std::vector<std::string>> table, const std::string& name, FILE* fout)
 {
-    vector<vector<string> > newData;
-    newData.clear();
-    for (int i=0; i<data[0].size(); i++)
+  if (table.empty())
+    return;
+  fprintf(fout, "\\begin{table}[htb!]\n\\centering\n");
+  fprintf(fout, "\\caption{%s}\n", escape(std::move(name)).c_str());
+  fprintf(fout, "\\begin{tabular}{|");
+  for (int i = 0; i < table[0].size(); i++)
+    fprintf(fout, "c|");
+  fprintf(fout, "}\n");
+  for (int i = 0; i < table.size(); i++)
+  {
+    fprintf(fout, "\\hline\n");
+    for (int j = 0; j < table[i].size(); j++)
     {
-        vector<string> row;
-        row.clear();
-        for (int j=0; j<data.size(); j++)
-            row.PB(data[j][i]);
-        newData.PB(row);
+      if (j) fprintf(fout, "&");
+      fprintf(fout, "%s", escape(table[i][j]).c_str());
     }
-    return newData;
+    fprintf(fout, "\\\\\n");
+  }
+  fprintf(fout, "\\hline\n");
+  fprintf(fout, "\\end{tabular}\\end{table}\n");
 }
 
-void Tex_Table(vector<vector<string> > table,string name,FILE* fout)
+inline void Tex_includeGraphics(const std::string& filename, const std::string& name, double width, FILE* fout)
 {
-    if (table.size()==0) return;
-    fprintf(fout,"\\begin{table}[htb!]\n\\centering\n");
-    fprintf(fout,"\\caption{%s}\n",escape(name).c_str());
-    fprintf(fout,"\\begin{tabular}{|");
-    for (int i=0; i<table[0].size(); i++)
-        fprintf(fout,"c|");
-    fprintf(fout,"}\n");
-    for (int i=0; i<table.size(); i++)
-    {
-        fprintf(fout,"\\hline\n");
-        for (int j=0; j<table[i].size(); j++)
-        {
-            if (j) fprintf(fout,"&");
-            fprintf(fout,"%s",escape(table[i][j]).c_str());
-        }
-        fprintf(fout,"\\\\\n");
-    }
-    fprintf(fout,"\\hline\n");
-    fprintf(fout,"\\end{tabular}\\end{table}\n");
+  fprintf(fout, "\\begin{figure}[htb!]\n\\centering\n");
+  fprintf(fout, "\\caption{%s}\n", escape(std::move(name)).c_str());
+  fprintf(fout, "\\includegraphics[width=%.1fin]{%s}\n", width, filename.c_str());
+  fprintf(fout, "\\end{figure}\n");
 }
 
-void Tex_includeGraphics(string filename,string name,double width,FILE* fout)
+inline std::vector<std::string> split(const std::string& str)
 {
-    fprintf(fout,"\\begin{figure}[htb!]\n\\centering\n");
-    fprintf(fout,"\\caption{%s}\n",escape(name).c_str());
-    fprintf(fout,"\\includegraphics[width=%.1fin]{%s}\n",width,filename.c_str());
-    fprintf(fout, "\\end{figure}\n");
+  std::vector<std::string> res;
+  res.clear();
+  char s[10000];
+  sprintf(s, "%s", str.c_str());
+  for (char* p = strtok(s, ";"); p; p = strtok(NULL, ";"))
+    res.push_back(p);
+  return res;
 }
 
-vector<string> split(string str)
+inline std::vector<int> intersect(std::vector<int> Xi, std::vector<int> Yj)
 {
-    vector<string> res;
-    res.clear();
-    char s[10000];
-    sprintf(s,"%s",str.c_str());
-    for (char* p=strtok(s,";"); p; p=strtok(NULL,";"))
-        res.PB(p);
-    return res;
+  int Xi_size = Xi.size();
+  int Yj_size = Yj.size();
+  std::vector<int> v(std::max(Xi_size, Yj_size));
+  if (Xi_size == 0)
+    return Xi;
+  if (Yj_size == 0)
+    return Yj;
+
+  int Xi_array[Xi_size];
+  int Yj_array[Yj_size];
+
+  for (int i = 0; i < Xi_size; i++)
+  {
+    Xi_array[i] = Xi[i];
+  }
+
+  for (int j = 0; j < Yj_size; j++)
+  {
+    Yj_array[j] = Yj[j];
+  }
+
+  int* pXi = Xi_array;
+  int* pYj = Yj_array;
+  std::sort(pXi, pXi + Xi_size);
+  std::sort(pYj, pYj + Yj_size);
+  std::vector<int>::iterator it = set_intersection(pXi, pXi + Xi_size, pYj, pYj + Yj_size, v.begin());
+  v.resize(it - v.begin());
+  return v;
 }
 
-vector<int> intersect(vector<int> Xi, vector<int> Yj)
+inline int intersect_size(std::vector<int> Xi, std::vector<int> Yj)
 {
-    int Xi_size = Xi.size();
-    int Yj_size = Yj.size();
-    vector<int> v(Xi.size()>Yj.size()?Xi.size():Yj.size());
-    if (Xi_size == 0)
-        return Xi;
-    if (Yj_size == 0)
-        return Yj;
-
-
-    vector<int>::iterator it;
-
-    int Xi_array[Xi.size()];
-    int Yj_array[Yj.size()];
-    int i,j;
-    for (i = 0; i<Xi.size(); i++)
-        Xi_array[i] = Xi[i];
-    for (j = 0; j<Yj.size(); j++)
-        Yj_array[j] = Yj[j];
-    int* pXi = Xi_array;
-    int* pYj = Yj_array;
-    sort (pXi,pXi+Xi_size);
-    sort (pYj,pYj+Yj_size);
-    it=set_intersection (pXi, pXi+Xi_size, pYj, pYj+Yj_size, v.begin());
-    v.resize(it-v.begin());
-    return v;
+  std::vector<int> v = intersect(std::move(Xi), std::move(Yj));
+  return v.size();
 }
 
-int intersect_size(vector<int> Xi, vector<int> Yj)
+inline std::vector<int> symmetric_difference(std::vector<int> Xi, std::vector<int> Yj)
 {
-    vector<int> v = intersect(Xi, Yj);
-    return v.size();
+  int Xi_size = Xi.size();
+  int Yj_size = Yj.size();
+
+  if (Yj_size == 0)
+  {
+    return Xi;
+  }
+
+  if (Xi_size == 0)
+  {
+    return Yj;
+  }
+
+  std::vector<int> v(std::max(Xi_size, Yj_size));
+
+  int Xi_array[Xi_size];
+  int Yj_array[Yj_size];
+
+  for (int i = 0; i < Xi_size; i++)
+  {
+    Xi_array[i] = Xi[i];
+  }
+  for (int j = 0; j < Yj_size; j++)
+  {
+    Yj_array[j] = Yj[j];
+  }
+
+  int* pXi = Xi_array;
+  int* pYj = Yj_array;
+  std::sort(pXi, pXi + Xi_size);
+  std::sort(pYj, pYj + Yj_size);
+  const auto it = set_symmetric_difference(pXi, pXi + Xi_size, pYj, pYj + Yj_size, v.begin());
+  v.resize(it - v.begin());
+  return v;
 }
 
-
-vector<int> symmetric_difference(vector<int> Xi, vector<int> Yj)
+inline std::vector<int> difference(std::vector<int> Xi, std::vector<int> Yj)
 {
-    int Xi_size = Xi.size();
-    int Yj_size = Yj.size();
+  int Xi_size = Xi.size();
+  int Yj_size = Yj.size();
 
-    if (Yj_size == 0)
-    {
-        return Xi;
-    }
-    else if (Xi_size == 0)
-    {
-        return Yj;
-    }
+  if (Xi_size == 0
+    || Yj_size == 0)
+  {
+    return Xi;
+  }
 
-    vector<int> v(Xi.size()>Yj.size()?Xi.size():Yj.size());
-    vector<int>::iterator it;
+  std::vector<int> v(std::max(Xi_size, Yj_size));
 
-    int Xi_array[Xi.size()];
-    int Yj_array[Yj.size()];
-    int i,j;
-    for (i = 0; i<Xi.size(); i++)
-        Xi_array[i] = Xi[i];
-    for (j = 0; j<Yj.size(); j++)
-        Yj_array[j] = Yj[j];
-    int* pXi = Xi_array;
-    int* pYj = Yj_array;
-    sort (pXi,pXi+Xi_size);
-    sort (pYj,pYj+Yj_size);
-    it = set_symmetric_difference(pXi, pXi+Xi_size, pYj, pYj+Yj_size, v.begin());
-    v.resize(it-v.begin());
-    return v;
+  int Xi_array[Xi_size];
+  int Yj_array[Yj_size];
+  for (int i = 0; i < Xi_size; i++)
+  {
+    Xi_array[i] = Xi[i];
+  }
+
+  for (int j = 0; j < Yj_size; j++)
+  {
+    Yj_array[j] = Yj[j];
+  }
+
+  int* pXi = Xi_array;
+  int* pYj = Yj_array;
+  std::sort(pXi, pXi + Xi_size);
+  std::sort(pYj, pYj + Yj_size);
+  const auto it = set_difference(pXi, pXi + Xi_size, pYj, pYj + Yj_size, v.begin());
+  v.resize(it - v.begin());
+  return v;
 }
-
-vector<int> difference(vector<int> Xi, vector<int> Yj)
-{
-    int Xi_size = Xi.size();
-    int Yj_size = Yj.size();
-
-    if (Xi_size == 0 || Yj_size == 0)
-    {
-        return Xi;
-    }   
-
-    vector<int> v(Xi.size()>Yj.size()?Xi.size():Yj.size());
-    vector<int>::iterator it;
-
-    int Xi_array[Xi.size()];
-    int Yj_array[Yj.size()];
-    int i,j;
-    for (i = 0; i<Xi.size(); i++)
-        Xi_array[i] = Xi[i];
-    for (j = 0; j<Yj.size(); j++)
-        Yj_array[j] = Yj[j];
-    int* pXi = Xi_array;
-    int* pYj = Yj_array;
-    sort (pXi,pXi+Xi_size);
-    sort (pYj,pYj+Yj_size);
-    it = set_difference(pXi, pXi+Xi_size, pYj, pYj+Yj_size, v.begin());
-    v.resize(it-v.begin());
-    return v;
-}
-
+#endif // BASIC_H

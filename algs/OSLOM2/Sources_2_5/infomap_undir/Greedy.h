@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef GREEDY_H
 #define GREEDY_H
 
@@ -13,32 +15,31 @@
 #include <stack>
 #include <map>
 #include <algorithm>
-using namespace std;
 
-
-class Greedy : public GreedyBase{
- public:
-  Greedy(MTRand *RR,int nnode,double deg,Node **node);
+class Greedy : public GreedyBase
+{
+public:
+  Greedy(MTRand *RR, int nnode, double deg, Node **node);
   virtual ~Greedy();
-  virtual void initiate(void);
-  virtual void calibrate(void);
-  virtual void tune(void);
+  virtual void initiate();
+  virtual void calibrate();
+  virtual void tune();
   virtual void prepare(bool sort);
   virtual void level(Node ***, bool sort);
   virtual void move(bool &moved);
-  virtual void determMove(vector<int> &moveTo);
-  
-  int Nempty;
-  vector<int> mod_empty;
+  virtual void determineMove(std::vector<int> &moveTo);
 
-  vector<double> mod_exit;
-  vector<double> mod_degree;
-  vector<int> mod_members;
-  
- protected:
+  int Nempty;
+  std::vector<int> mod_empty;
+
+  std::vector<double> mod_exit;
+  std::vector<double> mod_degree;
+  std::vector<int> mod_members;
+
+protected:
   double plogp(double d);
-  vector<pair<int,double> >::iterator link;
-  vector<int> modWnode;
+  std::vector<std::pair<int, double>>::iterator link;
+  std::vector<int> modWnode;
 };
 
 #endif

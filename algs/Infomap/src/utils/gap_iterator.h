@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -23,7 +22,7 @@
  along with Infomap software package.  If not, see <http://www.gnu.org/licenses/>.
 
 **********************************************************************************/
-
+#pragma once
 
 #ifndef GAP_ITERATOR_H_
 #define GAP_ITERATOR_H_
@@ -35,87 +34,93 @@ template<typename _Iterator>
 class gap_iterator
 {
 public:
-	typedef _Iterator												iterator_type;
-	typedef typename iterator_traits<_Iterator>::iterator_category	iterator_category;
-	typedef typename iterator_traits<_Iterator>::value_type  		value_type;
-	typedef typename iterator_traits<_Iterator>::difference_type	difference_type;
-	typedef typename iterator_traits<_Iterator>::reference 			reference;
-	typedef typename iterator_traits<_Iterator>::pointer   			pointer;
+  typedef _Iterator												iterator_type;
+  typedef typename iterator_traits<_Iterator>::iterator_category	iterator_category;
+  typedef typename iterator_traits<_Iterator>::value_type  		value_type;
+  typedef typename iterator_traits<_Iterator>::difference_type	difference_type;
+  typedef typename iterator_traits<_Iterator>::reference 			reference;
+  typedef typename iterator_traits<_Iterator>::pointer   			pointer;
 
-	gap_iterator(iterator_type first,
-			iterator_type firstEnd,
-			iterator_type second) :
-				m_first(first),
-				m_firstEnd(firstEnd),
-				m_second(second),
-				m_isFirst(m_first != m_firstEnd),
-				m_current(m_isFirst ? m_first : m_second)
-	{ }
+  gap_iterator(iterator_type first, iterator_type firstEnd, iterator_type second)
+    : m_first(first)
+    , m_firstEnd(firstEnd)
+    , m_second(second)
+    , m_isFirst(m_first != m_firstEnd)
+    , m_current(m_isFirst ? m_first : m_second)
+  { }
 
-	gap_iterator(iterator_type secondEnd) :
-		m_first(secondEnd),
-		m_firstEnd(secondEnd),
-		m_second(secondEnd),
-		m_isFirst(false),
-		m_current(secondEnd)
-	{ }
+  gap_iterator(iterator_type secondEnd)
+    : m_first(secondEnd)
+    , m_firstEnd(secondEnd)
+    , m_second(secondEnd)
+    , m_isFirst(false)
+    , m_current(secondEnd)
+  { }
 
-	/**
-	 *  Copy constructor.
-	 */
-	gap_iterator(const gap_iterator& other) :
-		m_first(other.m_first),
-		m_firstEnd(other.m_firstEnd),
-		m_second(other.m_second),
-		m_isFirst(other.m_isFirst),
-		m_current(other.m_current)
-	{ }
+  /**
+   *  Copy constructor.
+   */
+  gap_iterator(const gap_iterator& other)
+    : m_first(other.m_first)
+    , m_firstEnd(other.m_firstEnd)
+    , m_second(other.m_second)
+    , m_isFirst(other.m_isFirst)
+    , m_current(other.m_current)
+  { }
 
-	reference
-	operator*() const
-	{ return *m_current; }
+  reference
+    operator*() const
+  {
+    return *m_current;
+  }
 
-	pointer
-	operator->() const
-	{ return m_current.operator->(); }
+  pointer
+    operator->() const
+  {
+    return m_current.operator->();
+  }
 
-	gap_iterator&
-	operator++()
-	{
-		++m_current;
-		if (m_current == m_firstEnd)
-		{
-			m_current = m_second;
-			m_isFirst = false;
-		}
-		return *this;
-	}
+  gap_iterator&
+    operator++()
+  {
+    ++m_current;
+    if (m_current == m_firstEnd)
+    {
+      m_current = m_second;
+      m_isFirst = false;
+    }
+    return *this;
+  }
 
-	gap_iterator&
-	operator--()
-	{
-		if (m_current == m_second)
-		{
-			m_current = m_firstEnd;
-			m_isFirst = true;
-		}
-		--m_current;
-		return *this;
-	}
+  gap_iterator&
+    operator--()
+  {
+    if (m_current == m_second)
+    {
+      m_current = m_firstEnd;
+      m_isFirst = true;
+    }
+    --m_current;
+    return *this;
+  }
 
-	const _Iterator&
-	base() const
-	{ return m_current; }
+  const _Iterator&
+    base() const
+  {
+    return m_current;
+  }
 
-	bool isFirst() const
-	{ return m_isFirst; }
+  bool isFirst() const
+  {
+    return m_isFirst;
+  }
 
 private:
-	iterator_type m_first;
-	iterator_type m_firstEnd;
-	iterator_type m_second;
-	bool m_isFirst;
-	_Iterator m_current;
+  iterator_type m_first;
+  iterator_type m_firstEnd;
+  iterator_type m_second;
+  bool m_isFirst;
+  _Iterator m_current;
 };
 
 // copy from stl_iterator.h
@@ -129,41 +134,51 @@ private:
  * to iterate over!
  */
 template<typename _Iterator>
-inline bool
+bool
 operator==(const gap_iterator<_Iterator>& __x,
-		const gap_iterator<_Iterator>& __y)
-{ return !(__x.isFirst() ^ __y.isFirst()) && (__x.base() == __y.base()); }
+  const gap_iterator<_Iterator>& __y)
+{
+  return !(__x.isFirst() ^ __y.isFirst()) && (__x.base() == __y.base());
+}
 
 template<typename _Iterator>
-inline bool
+bool
 operator<(const gap_iterator<_Iterator>& __x,
-		const gap_iterator<_Iterator>& __y)
-{ return (__x.isFirst() && !__y.isFirst()) || (__y.base() < __x.base()); }
+  const gap_iterator<_Iterator>& __y)
+{
+  return (__x.isFirst() && !__y.isFirst()) || (__y.base() < __x.base());
+}
 
 template<typename _Iterator>
-inline bool
+bool
 operator!=(const gap_iterator<_Iterator>& __x,
-		const gap_iterator<_Iterator>& __y)
-{ return !(__x == __y); }
+  const gap_iterator<_Iterator>& __y)
+{
+  return !(__x == __y);
+}
 
 template<typename _Iterator>
-inline bool
+bool
 operator>(const gap_iterator<_Iterator>& __x,
-		const gap_iterator<_Iterator>& __y)
-{ return __y < __x; }
+  const gap_iterator<_Iterator>& __y)
+{
+  return __y < __x;
+}
 
 template<typename _Iterator>
-inline bool
+bool
 operator<=(const gap_iterator<_Iterator>& __x,
-		const gap_iterator<_Iterator>& __y)
-{ return !(__y < __x); }
+  const gap_iterator<_Iterator>& __y)
+{
+  return !(__y < __x);
+}
 
 template<typename _Iterator>
-inline bool
+bool
 operator>=(const gap_iterator<_Iterator>& __x,
-		const gap_iterator<_Iterator>& __y)
-{ return !(__x < __y); }
-
-
+  const gap_iterator<_Iterator>& __y)
+{
+  return !(__x < __y);
+}
 
 #endif /* GAP_ITERATOR_H_ */

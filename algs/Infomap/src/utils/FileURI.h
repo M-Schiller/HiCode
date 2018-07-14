@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -23,13 +22,13 @@
  along with Infomap software package.  If not, see <http://www.gnu.org/licenses/>.
 
 **********************************************************************************/
-
+#pragma once
 
 #ifndef FILEURI_H_
 #define FILEURI_H_
+
 #include <iostream>
 #include <string>
-using std::string;
 
 /**
  * Filename class to simplify handling of parts of a filename.
@@ -42,59 +41,59 @@ using std::string;
 class FileURI
 {
 public:
-	FileURI(); // Good to be able to have a Filename member in a class without require initialization in initialization list
-	FileURI(const char* filename, bool requireExtension = false);
-	FileURI(const string& filename, bool requireExtension = false);
-	FileURI(const FileURI& other);
-	FileURI & operator= (const FileURI& other);
+  FileURI(); // Good to be able to have a Filename member in a class without require initialization in initialization list
+  FileURI(const char* filename, bool requireExtension = false);
+  FileURI(const std::string& filename, bool requireExtension = false);
+  FileURI(const FileURI& other);
+  FileURI & operator= (const FileURI& other);
 
-	const string& getFilename() const
-    {
-        return m_filename;
-    }
+  const std::string& getFilename() const
+  {
+    return m_filename;
+  }
 
-	/**
-	 * Includes last '/' if non-empty.
-	 */
-    const string& getDirectory() const
-    {
-        return m_directory;
-    }
+  /**
+   * Includes last '/' if non-empty.
+   */
+  const std::string& getDirectory() const
+  {
+    return m_directory;
+  }
 
-    const string& getName() const
-    {
-        return m_name;
-    }
+  const std::string& getName() const
+  {
+    return m_name;
+  }
 
-    const string& getExtension() const
-    {
-        return m_extension;
-    }
+  const std::string& getExtension() const
+  {
+    return m_extension;
+  }
 
-    std::string getParts()
-	{
-		std::string out("['" +
-				getDirectory() + "' + '" +
-				getName() + "' + '" +
-				getExtension() + "']");
-		return out;
-	}
+  std::string getParts() const
+  {
+    std::string out("['" +
+      getDirectory() + "' + '" +
+      getName() + "' + '" +
+      getExtension() + "']");
+    return out;
+  }
 
-	friend std::ostream& operator<<(std::ostream& out, const FileURI& file)
-	{
-		return out << file.getFilename();
-	}
+  friend std::ostream& operator<<(std::ostream& out, const FileURI& file)
+  {
+    return out << file.getFilename();
+  }
 
 private:
-    void analyzeFilename();
-    string getErrorMessage();
+  void analyzeFilename();
+  std::string getErrorMessage();
 
-    string m_filename;
-    bool m_requireExtension;
+  std::string m_filename;
+  bool m_requireExtension;
 
-	string m_directory;
-	string m_name;
-	string m_extension;
+  std::string m_directory;
+  std::string m_name;
+  std::string m_extension;
 };
 
 #endif /* FILEURI_H_ */

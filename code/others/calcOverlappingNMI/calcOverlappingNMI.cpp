@@ -12,17 +12,15 @@
 #include <sstream>
 #include <cctype>
 #include <fstream>
-using namespace std;
 
-#define lowbit(x) ((x)&(-(x)))
-#define sqr(x) ((x)*(x))
-#define PB push_back
-#define MP make_pair
+std::map<std::string, std::string> config;
 
-int main(int argc,char** argv){
-	if (argc!=){
-		puts("Argument Error");
-		return 0;
-	}
-	return 0;
+#include "basic.h"
+#include "Graph.h"
+#include "Community.h"
+#include "Metrics.h"
+
+int main(int argc, char** argv)
+{
+  std::cout << calcNMI(argv[1], argv[2]) << std::endl;
 }

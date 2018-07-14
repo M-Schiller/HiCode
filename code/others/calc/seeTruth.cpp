@@ -15,9 +15,8 @@
 //#include <ctime>
 #include <sys/time.h>
 #include <unistd.h>
-using namespace std;
 
-map<string,string> config;
+std::map<std::string, std::string> config;
 
 #include "basic.h"
 #include "Graph.h"
@@ -39,27 +38,25 @@ map<string,string> config;
 
 #define lowbit(x) ((x)&(-(x)))
 #define sqr(x) ((x)*(x))
-#define PB push_back
-#define MP make_pair
 #define LINESEP "###########################\n"
 
-int main(int argc,char** argv){
-	Community comm;
-	comm.load(argv[1]);
+int main(int argc, char** argv)
+{
+  Community comm;
+  comm.load(argv[1]);
 
-	Graph g;
-	if (!g.load(argv[2])) return 0;
+  Graph g;
+  if (!g.load(argv[2])) return 0;
 
-	int sum = 0;
-	double p = g.N;
+  int sum = 0;
+  double p = g.N;
 
-	for(int i=1; i <=comm.NC; ++i)
-	{
-		sum+=comm.id[i].size();
-	}
-	cout<<"total:"<<g.N<<endl;
-	cout<<"equal 0:"<<(g.N-sum)<<endl;
-	cout<<"percent:"<<(g.N-sum)/p<<endl;
-	return 0;
+  for (int i = 1; i <= comm.NC; ++i)
+  {
+    sum += comm.id[i].size();
+  }
+  std::cout << "total:" << g.N << std::endl;
+  std::cout << "equal 0:" << (g.N - sum) << std::endl;
+  std::cout << "percent:" << (g.N - sum) / p << std::endl;
+  return 0;
 }
-

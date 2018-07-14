@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef GREEDY_H
 #define GREEDY_H
 
@@ -13,36 +15,35 @@
 #include <stack>
 #include <map>
 #include <algorithm>
-using namespace std;
 
-
-class Greedy : public GreedyBase{
- public:
-  Greedy(MTRand *RR,int nnode,Node **node,int nmembers);
+class Greedy : public GreedyBase
+{
+public:
+  Greedy(MTRand *RR, int nnode, Node **node, int nmembers);
   virtual ~Greedy();
-  virtual void initiate(void);
-  virtual void calibrate(void);
-  virtual void tune(void);
+  virtual void initiate();
+  virtual void calibrate();
+  virtual void tune();
   virtual void prepare(bool sort);
-  virtual void level(Node ***,bool sort);
+  virtual void level(Node ***, bool sort);
   virtual void move(bool &moved);
-  virtual void determMove(vector<int> &moveTo);
-  virtual void eigenvector(void);
+  virtual void determineMove(std::vector<int> &moveTo);
+  virtual void eigenvector();
 
-  vector<int> danglings;
-  
+  std::vector<int> danglings;
+
   int Nempty;
-  vector<int> mod_empty;
-  
-  vector<double> mod_exit;
-  vector<double> mod_size;
-  vector<double> mod_danglingSize;
-  vector<double> mod_teleportWeight;
-  vector<int> mod_members;
-  
- protected:
-  
-  vector<int> modSnode;
+  std::vector<int> mod_empty;
+
+  std::vector<double> mod_exit;
+  std::vector<double> mod_size;
+  std::vector<double> mod_danglingSize;
+  std::vector<double> mod_teleportWeight;
+  std::vector<int> mod_members;
+
+protected:
+
+  std::vector<int> modSnode;
 };
 
 #endif

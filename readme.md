@@ -24,13 +24,13 @@ $ ./Main
 
 ## How to Run
 
-Rename the graph file to "graph", and put it into director
+Rename the graph file to "graph", and put it into directory
 ```sh
 $ ./data/GRAPH_NAME/
 ```
 
-* The graph file's first line indicating the number of vertex.
-* The following lines containing 'i j w' representing an edge between (i,j) with weight w.
+* The graph file's first line indicates the number of vertices.
+* The following lines contain 'i j w' representing an edge between (i,j) with weight w.
 * Then write a config file for the graph , named "GRAPH_NAME.config" . 
 See configuration details in the next section.
 
@@ -81,14 +81,14 @@ The weakening method 'ReduceWeight' in paper indicates the 'Frameworks' should b
 ## Code Structure
 
 ### Framework
-The current framework is implemented in some headfiles like 'Framework_Reduce.h' and the base class is 'Framework.h'. 
+The current framework is implemented in some header files like 'Framework_Reduce.h' and the base class is 'Framework.h'. 
 
-The most important function that need to be implemented is 'calcNextLayerGraph(Graph cur,Community comm)', which gives the current graph and a set of community, return value is the reduced graph.
+The most important function that needs to be implemented is 'calcNextLayerGraph(Graph cur,Community comm)', which gives the current graph and a set of communitie, return value is the reduced graph.
 
 ### Base Algorithms
-The current framework is implemented in some headfiles like 'SingleLayer_Modularity.h' and the base class is 'SingleLayer_Method.h'.
+The current framework is implemented in some header files like 'SingleLayer_Modularity.h' and the base class is 'SingleLayer_Method.h'.
 
-The most important function that need to be implemented is 'generateCommunity(string graphFile,string communityFile)', which takes in the graph file and using the algorithm to generate the communities and save in communityFile. 
+The most important function that needs to be implemented is 'generateCommunity(string graphFile,string communityFile)', which takes in the graph file and uses the algorithm to generate the communities and saves to a communityFile. 
 
 ## Announcements
 ### Licence

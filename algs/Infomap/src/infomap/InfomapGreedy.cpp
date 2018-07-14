@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -24,7 +23,6 @@
 
 **********************************************************************************/
 
-
 #include "InfomapGreedy.h"
 //#include "../utils/Logger.h"
 //#include "flowData.h"
@@ -41,5 +39,3 @@
 //
 //	DEBUG_OUT("Root: " << root << std::endl);
 //}
-
-

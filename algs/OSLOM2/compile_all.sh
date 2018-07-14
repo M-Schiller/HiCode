@@ -12,25 +12,25 @@ visual_folder=$Main_folder/visualSources
 
 
 echo "Compiling OSLOM undirected (oslom_undir) ..."
-echo "g++ -o oslom_undir $source_folder/main_undirected.cpp -O3 -Wall"
-g++ -o oslom_undir $source_folder/main_undirected.cpp -O3 -Wall
+echo "g++ -o oslom_undir $source_folder/main_undirected.cpp -std=c++1z -O3 -Wall"
+g++ -o oslom_undir $source_folder/main_undirected.cpp -std=c++1z -O3 -Wall
 
 echo ""
 echo "Compiling OSLOM directed (oslom_dir) ..."
-echo "g++ -o oslom_dir $source_folder/main_directed.cpp -O3 -Wall"
-g++ -o oslom_dir $source_folder/main_directed.cpp -O3 -Wall
+echo "g++ -o oslom_dir $source_folder/main_directed.cpp -std=c++1z -O3 -Wall"
+g++ -o oslom_dir $source_folder/main_directed.cpp -std=c++1z -O3 -Wall
 
 
 echo ""
 echo "Compiling program to write pajek format (pajek_write_undir) ..."
-echo "g++ -o pajek_write_undir $visual_folder/main_pajek.cpp -O3"
-g++ -o pajek_write_undir $visual_folder/main_pajek.cpp -O3
+echo "g++ -o pajek_write_undir $visual_folder/main_pajek.cpp -std=c++1z -O3"
+g++ -o pajek_write_undir $visual_folder/main_pajek.cpp -std=c++1z -O3
 
 
 echo ""
 echo "Compiling program to write pajek format (pajek_write_dir) ..."
-echo "g++ -o pajek_write_dir $visual_folder/main_pajek_directed.cpp -O3"
-g++ -o pajek_write_dir $visual_folder/main_pajek_directed.cpp -O3
+echo "g++ -o pajek_write_dir $visual_folder/main_pajek_directed.cpp -std=c++1z -O3"
+g++ -o pajek_write_dir $visual_folder/main_pajek_directed.cpp -std=c++1z -O3
 
 
 
@@ -40,7 +40,7 @@ echo "Compiling infomap_undirected ..."
 cd $Main_folder/infomap_undir/
 make clean
 make
-g++ -o infomap_scr infomap_scr.cpp -O3
+g++ -o infomap_scr infomap_scr.cpp -std=c++1z -O3
 cd ../..
 mv $Main_folder/infomap_undir/infomap infomap_undir
 mv $Main_folder/infomap_undir/infomap_scr infomap_undir_script
@@ -51,7 +51,7 @@ echo "Compiling infomap_directed ..."
 cd $Main_folder/infomap_dir/
 make clean
 make
-g++ -o infomap_scr infomap_scr.cpp -O3
+g++ -o infomap_scr infomap_scr.cpp -std=c++1z -O3
 cd ../..
 mv $Main_folder/infomap_dir/infomap infomap_dir
 mv $Main_folder/infomap_dir/infomap_scr infomap_dir_script
@@ -62,7 +62,7 @@ echo "Compiling louvain  method ..."
 cd $Main_folder/louvain/
 g++ script_to_compile.cpp
 ./a.out
-g++ -o louvain_script order.cpp -O3
+g++ -o louvain_script order.cpp -std=c++1z -O3
 cd ../..
 mv $Main_folder/louvain/louvain_script .
 mv $Main_folder/louvain/community .

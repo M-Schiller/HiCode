@@ -1,7 +1,3 @@
-
-
-
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                               *
  *	This program is free software; you can redistribute it and/or modify         *
@@ -24,40 +20,23 @@
  *  Location: ISI foundation, Turin, Italy                                       *
  *                                                                               *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
- 
-  
+
 #include "standard_package/standard_include.cpp"
-
-
 #include "log_table.h"
 
+double log_fact_table::right_cumulative_function(int k1, int k2, int tm, int x)
+{
+  if (x > k1 || x > k2)
+    return 0;
 
-
-
-
-
-double log_fact_table::right_cumulative_function(int k1, int k2, int tm, int x) {
-
-	if(x>k1 || x>k2)
-		return 0;
-	
-	return cum_hyper_right(x, k2, tm, k1);
-	
+  return cum_hyper_right(x, k2, tm, k1);
 }
-
-
-
-
-
-
 
 #include "set_parameters.h"
 
 log_fact_table LOG_TABLE;
 Parameters paras;
-ofstream fileout;
-
-
+std::ofstream fileout;
 
 #include "module_collection.h"
 #include "dir_weighted_tabdeg.h"
@@ -70,33 +49,11 @@ ofstream fileout;
 
 #include "hierarchies.h"
 
-
-
-
-void program_statement(char * b) {
-	
-	
-	cout<<"\n\n\n***************************************************************************************************************************************************"<<endl;
-
-	cout<<"This program implements the OSLO-method for directed networks"<<endl;
-	
-		
-	general_program_statement(b);
-	
-	
-	
+void program_statement(char * b)
+{
+  std::cout << "\n\n\n***************************************************************************************************************************************************" << std::endl;
+  std::cout << "This program implements the OSLO-method for directed networks" << std::endl;
+  general_program_statement(b);
 }
 
-
 #include "main_body.cpp"
-
-
-
-
-
-
-
-
-
-
-

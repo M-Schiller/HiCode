@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -24,7 +23,6 @@
 
 **********************************************************************************/
 
-
 #ifndef TREEITERATORS_H_
 #define TREEITERATORS_H_
 #include <cstddef>
@@ -39,13 +37,13 @@ using std::iterator_traits;
 template <typename NodePointerType, typename iterator_tag = std::forward_iterator_tag>
 struct node_iterator_base
 {
-//	typedef typename iterator_traits<NodePointerType>::iterator_category	iterator_category; //random_access_iterator_tag
-//	typedef std::forward_iterator_tag										iterator_category;
-	typedef iterator_tag													iterator_category;
-	typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
-	typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
-	typedef typename iterator_traits<NodePointerType>::reference			reference;
-	typedef typename iterator_traits<NodePointerType>::pointer				pointer;
+  //	typedef typename iterator_traits<NodePointerType>::iterator_category	iterator_category; //random_access_iterator_tag
+  //	typedef std::forward_iterator_tag										iterator_category;
+  typedef iterator_tag													iterator_category;
+  typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
+  typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
+  typedef typename iterator_traits<NodePointerType>::reference			reference;
+  typedef typename iterator_traits<NodePointerType>::pointer				pointer;
 };
 
 /**
@@ -56,88 +54,93 @@ template <typename NodePointerType> // pointer or const pointer
 class SiblingIterator // Inherited typedefs aren't recognized for some reason?!
 {
 public:
-	typedef SiblingIterator<NodePointerType>								self_type;
-	typedef std::bidirectional_iterator_tag									iterator_category;
-	typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
-	typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
-	typedef typename iterator_traits<NodePointerType>::reference			reference;
-	typedef typename iterator_traits<NodePointerType>::pointer				pointer;
+  typedef SiblingIterator<NodePointerType>								self_type;
+  typedef std::bidirectional_iterator_tag									iterator_category;
+  typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
+  typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
+  typedef typename iterator_traits<NodePointerType>::reference			reference;
+  typedef typename iterator_traits<NodePointerType>::pointer				pointer;
 
-	SiblingIterator()
-	:	m_current(NodePointerType())
-	{}
+  SiblingIterator()
+    : m_current(NodePointerType())
+  {}
 
-	explicit
-	SiblingIterator(const NodePointerType& nodePointer)
-	:	m_current(nodePointer)
-	{}
+  explicit
+    SiblingIterator(const NodePointerType& nodePointer)
+    : m_current(nodePointer)
+  {}
 
-	SiblingIterator(const SiblingIterator& other)
-	:	m_current(other.m_current)
-	{}
+  SiblingIterator(const SiblingIterator& other)
+    : m_current(other.m_current)
+  {}
 
-	SiblingIterator & operator= (const SiblingIterator& other)
-	{
-		m_current = other.m_current;
-		return *this;
-	}
+  SiblingIterator & operator= (const SiblingIterator& other)
+  {
+    m_current = other.m_current;
+    return *this;
+  }
 
-	pointer base() const
-	{ return m_current; }
+  pointer base() const
+  {
+    return m_current;
+  }
 
-	reference
-	operator*() const
-	{ return *m_current; }
+  reference
+    operator*() const
+  {
+    return *m_current;
+  }
 
-	pointer
-	operator->() const
-	{ return m_current; }
+  pointer
+    operator->() const
+  {
+    return m_current;
+  }
 
+  SiblingIterator&
+    operator++()
+  {
+    ASSERT(m_current != 0);
+    m_current = m_current->next;
+    return *this;
+  }
 
-	SiblingIterator&
-	operator++()
-	{
-		ASSERT(m_current != 0);
-		m_current = m_current->next;
-		return *this;
-	}
+  SiblingIterator
+    operator++(int)
+  {
+    SiblingIterator copy(*this);
+    ++(*this);
+    return copy;
+  }
 
-	SiblingIterator
-	operator++(int)
-	{
-		SiblingIterator copy(*this);
-		++(*this);
-		return copy;
-	}
+  SiblingIterator&
+    operator--()
+  {
+    ASSERT(m_current != 0);
+    m_current = m_current->previous;
+    return *this;
+  }
 
-	SiblingIterator&
-	operator--()
-	{
-		ASSERT(m_current != 0);
-		m_current = m_current->previous;
-		return *this;
-	}
+  SiblingIterator
+    operator--(int)
+  {
+    SiblingIterator copy(*this);
+    --(*this);
+    return copy;
+  }
 
-	SiblingIterator
-	operator--(int)
-	{
-		SiblingIterator copy(*this);
-		--(*this);
-		return copy;
-	}
+  bool operator==(const self_type& rhs) const
+  {
+    return m_current == rhs.m_current;
+  }
 
-	bool operator==(const self_type& rhs) const
-	{
-		return m_current == rhs.m_current;
-	}
-
-	bool operator!=(const self_type& rhs) const
-	{
-		return !(m_current == rhs.m_current);
-	}
+  bool operator!=(const self_type& rhs) const
+  {
+    return !(m_current == rhs.m_current);
+  }
 
 private:
-	NodePointerType m_current;
+  NodePointerType m_current;
 };
 
 /**
@@ -150,242 +153,249 @@ template <typename NodePointerType> // NodeBase* or const NodeBase*
 class DFSPreOrderIterator
 {
 public:
-	typedef DFSPreOrderIterator<NodePointerType>							self_type;
+  typedef DFSPreOrderIterator<NodePointerType>							self_type;
 
-	// Use iterator_traits<...> to forward correct typedefs.
-	//(It uses 'partial template specialization' to give correct semantics both for pointer and non-pointer types.)
+  // Use iterator_traits<...> to forward correct typedefs.
+  //(It uses 'partial template specialization' to give correct semantics both for pointer and non-pointer types.)
 //	typedef typename iterator_traits<NodePointerType>::iterator_category	iterator_category; //random_access_iterator_tag
-	typedef std::forward_iterator_tag										iterator_category;
-	typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
-	typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
-	typedef typename iterator_traits<NodePointerType>::reference			reference;
-	typedef typename iterator_traits<NodePointerType>::pointer				pointer;
+  typedef std::forward_iterator_tag										iterator_category;
+  typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
+  typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
+  typedef typename iterator_traits<NodePointerType>::reference			reference;
+  typedef typename iterator_traits<NodePointerType>::pointer				pointer;
 
-	//	DFSPreOrderIterator();
-	//	DFSPreOrderIterator(node_ptr_type nodePointer);
+  //	DFSPreOrderIterator();
+  //	DFSPreOrderIterator(node_ptr_type nodePointer);
 
-	DFSPreOrderIterator()
-	:	m_root(NodePointerType()),
-		m_current(m_root),
-	 	m_depth(0)
-	{}
+  DFSPreOrderIterator()
+    : m_root(NodePointerType()),
+    m_current(m_root),
+    m_depth(0)
+  {}
 
-	explicit
-	DFSPreOrderIterator(const NodePointerType& nodePointer)
-	:	m_root(nodePointer),
-		m_current(nodePointer),
-	 	m_depth(0)
-	{}
+  explicit
+    DFSPreOrderIterator(const NodePointerType& nodePointer)
+    : m_root(nodePointer),
+    m_current(nodePointer),
+    m_depth(0)
+  {}
 
-	DFSPreOrderIterator(const DFSPreOrderIterator& other)
-	:	m_root(other.m_root),
-		m_current(other.m_current),
-	 	m_depth(other.m_depth)
-	{}
+  DFSPreOrderIterator(const DFSPreOrderIterator& other)
+    : m_root(other.m_root),
+    m_current(other.m_current),
+    m_depth(other.m_depth)
+  {}
 
-	DFSPreOrderIterator & operator= (const DFSPreOrderIterator& other)
-	{
-		m_root = other.m_root;
-		m_current = other.m_current;
-		m_depth = other.m_depth;
-		return *this;
-	}
+  DFSPreOrderIterator & operator= (const DFSPreOrderIterator& other)
+  {
+    m_root = other.m_root;
+    m_current = other.m_current;
+    m_depth = other.m_depth;
+    return *this;
+  }
 
-	pointer base() const
-	{ return m_current; }
+  pointer base() const
+  {
+    return m_current;
+  }
 
-	// Forward iterator requirements
-	reference
-	operator*() const
-	{ return *m_current; }
+  // Forward iterator requirements
+  reference
+    operator*() const
+  {
+    return *m_current;
+  }
 
-	pointer
-	operator->() const
-	{ return m_current; }
+  pointer
+    operator->() const
+  {
+    return m_current;
+  }
 
-	DFSPreOrderIterator&
-	operator++()
-	{
-		ASSERT(m_current!=0);
-		if(m_current->firstChild != 0)
-		{
-			m_current = m_current->firstChild;
-			++m_depth;
-		}
-		else
-		{
-			// The last condition should never be true if the first is not!
+  DFSPreOrderIterator&
+    operator++()
+  {
+    ASSERT(m_current != 0);
+    if (m_current->firstChild != 0)
+    {
+      m_current = m_current->firstChild;
+      ++m_depth;
+    }
+    else
+    {
+      // The last condition should never be true if the first is not!
 //			while(m_current->next == 0 || m_current->next->parent != m_current->parent)
-			// Now presupposes that the next pointer can't reach out from the current parent.
-			while(m_current->next == 0)
-			{
-				m_current = m_current->parent;
-				if(m_current == m_root || m_current == 0) // 0 if no children in first place
-				{
-					m_current = 0;
-					return *this;
-				}
-				--m_depth;
-			}
-			m_current = m_current->next;
-		}
-		return *this;
-	}
+      // Now presupposes that the next pointer can't reach out from the current parent.
+      while (m_current->next == 0)
+      {
+        m_current = m_current->parent;
+        if (m_current == m_root || m_current == 0) // 0 if no children in first place
+        {
+          m_current = 0;
+          return *this;
+        }
+        --m_depth;
+      }
+      m_current = m_current->next;
+    }
+    return *this;
+  }
 
-	DFSPreOrderIterator
-	operator++(int)
-	{
-		DFSPreOrderIterator copy(*this);
-		++(*this);
-		return copy;
-	}
+  DFSPreOrderIterator
+    operator++(int)
+  {
+    DFSPreOrderIterator copy(*this);
+    ++(*this);
+    return copy;
+  }
 
-	DFSPreOrderIterator
-	next()
-	{
-		DFSPreOrderIterator copy(*this);
-		return ++copy;
-	}
+  DFSPreOrderIterator
+    next()
+  {
+    DFSPreOrderIterator copy(*this);
+    return ++copy;
+  }
 
-	unsigned int depth() const
-	{
-		return m_depth;
-	}
+  unsigned int depth() const
+  {
+    return m_depth;
+  }
 
-	bool operator==(const self_type& rhs) const
-	{
-		return m_current == rhs.m_current;
-	}
+  bool operator==(const self_type& rhs) const
+  {
+    return m_current == rhs.m_current;
+  }
 
-	bool operator!=(const self_type& rhs) const
-	{
-		return !(m_current == rhs.m_current);
-	}
+  bool operator!=(const self_type& rhs) const
+  {
+    return !(m_current == rhs.m_current);
+  }
 
 private:
-	NodePointerType m_root;
-	NodePointerType m_current;
-	unsigned int m_depth;
+  NodePointerType m_root;
+  NodePointerType m_current;
+  unsigned int m_depth;
 };
-
-
 
 template <typename NodePointerType> // NodeBase* or const NodeBase*
 class LeafNodeIterator
 {
 public:
-	typedef LeafNodeIterator<NodePointerType>							self_type;
+  typedef LeafNodeIterator<NodePointerType>							self_type;
 
-	// Use iterator_traits<...> to forward correct typedefs. (It uses 'partial template specialization' to give correct semantics both for pointer and non-pointer types.)
-	//	typedef typename iterator_traits<NodePointerType>::iterator_category	iterator_category; //random_access_iterator_tag
-	typedef std::forward_iterator_tag										iterator_category;
-	typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
-	typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
-	typedef typename iterator_traits<NodePointerType>::reference			reference;
-	typedef typename iterator_traits<NodePointerType>::pointer				pointer;
+  // Use iterator_traits<...> to forward correct typedefs. (It uses 'partial template specialization' to give correct semantics both for pointer and non-pointer types.)
+  //	typedef typename iterator_traits<NodePointerType>::iterator_category	iterator_category; //random_access_iterator_tag
+  typedef std::forward_iterator_tag										iterator_category;
+  typedef typename iterator_traits<NodePointerType>::value_type  			value_type;
+  typedef typename iterator_traits<NodePointerType>::difference_type		difference_type;
+  typedef typename iterator_traits<NodePointerType>::reference			reference;
+  typedef typename iterator_traits<NodePointerType>::pointer				pointer;
 
-	//	DFSPreOrderIterator();
-	//	DFSPreOrderIterator(node_ptr_type nodePointer);
+  //	DFSPreOrderIterator();
+  //	DFSPreOrderIterator(node_ptr_type nodePointer);
 
-	LeafNodeIterator()
-	:	m_current(NodePointerType()),
-	 	m_depth(0)
-	{}
+  LeafNodeIterator()
+    : m_current(NodePointerType()),
+    m_depth(0)
+  {}
 
-	explicit
-	LeafNodeIterator(const NodePointerType& nodePointer)
-	:	m_current(nodePointer),
-	 	m_depth(0)
-	{
-		if (m_current != 0)
-		{
-			while(m_current->firstChild != 0)
-			{
-				m_current = m_current->firstChild;
-				++m_depth;
-			}
-		}
-	}
+  explicit
+    LeafNodeIterator(const NodePointerType& nodePointer)
+    : m_current(nodePointer),
+    m_depth(0)
+  {
+    if (m_current != 0)
+    {
+      while (m_current->firstChild != 0)
+      {
+        m_current = m_current->firstChild;
+        ++m_depth;
+      }
+    }
+  }
 
+  LeafNodeIterator(const LeafNodeIterator& other)
+    : m_current(other.m_current),
+    m_depth(other.m_depth)
+  {}
 
+  LeafNodeIterator & operator= (const LeafNodeIterator& other)
+  {
+    m_current = other.m_current;
+    m_depth = other.m_depth;
+    return *this;
+  }
 
-	LeafNodeIterator(const LeafNodeIterator& other)
-	:	m_current(other.m_current),
-	 	m_depth(other.m_depth)
-	{}
+  pointer base() const
+  {
+    return m_current;
+  }
 
-	LeafNodeIterator & operator= (const LeafNodeIterator& other)
-	{
-		m_current = other.m_current;
-		m_depth = other.m_depth;
-		return *this;
-	}
+  // Forward iterator requirements
+  reference
+    operator*() const
+  {
+    return *m_current;
+  }
 
-	pointer base() const
-	{ return m_current; }
+  pointer
+    operator->() const
+  {
+    return m_current;
+  }
 
-	// Forward iterator requirements
-	reference
-	operator*() const
-	{ return *m_current; }
+  LeafNodeIterator&
+    operator++()
+  {
+    ASSERT(m_current != 0);
+    while (m_current->next == 0 || m_current->next->parent != m_current->parent)
+    {
+      m_current = m_current->parent;
+      --m_depth;
+      if (m_current == 0)
+        return *this;
+    }
 
-	pointer
-	operator->() const
-	{ return m_current; }
+    m_current = m_current->next;
 
-	LeafNodeIterator&
-	operator++()
-	{
-		ASSERT(m_current!=0);
-		while(m_current->next == 0 || m_current->next->parent != m_current->parent)
-		{
-			m_current = m_current->parent;
-			--m_depth;
-			if(m_current == 0)
-				return *this;
-		}
+    if (m_current != 0)
+    {
+      while (m_current->firstChild != 0)
+      {
+        m_current = m_current->firstChild;
+        ++m_depth;
+      }
+    }
+    return *this;
+  }
 
-		m_current = m_current->next;
+  LeafNodeIterator
+    operator++(int)
+  {
+    LeafNodeIterator copy(*this);
+    ++(*this);
+    return copy;
+  }
 
-		if (m_current != 0)
-		{
-			while(m_current->firstChild != 0)
-			{
-				m_current = m_current->firstChild;
-				++m_depth;
-			}
-		}
-		return *this;
-	}
+  unsigned int depth() const
+  {
+    return m_depth;
+  }
 
-	LeafNodeIterator
-	operator++(int)
-	{
-		LeafNodeIterator copy(*this);
-		++(*this);
-		return copy;
-	}
+  bool operator==(const self_type& rhs) const
+  {
+    return m_current == rhs.m_current;
+  }
 
-	unsigned int depth() const
-	{
-		return m_depth;
-	}
-
-	bool operator==(const self_type& rhs) const
-	{
-		return m_current == rhs.m_current;
-	}
-
-	bool operator!=(const self_type& rhs) const
-	{
-		return !(m_current == rhs.m_current);
-	}
+  bool operator!=(const self_type& rhs) const
+  {
+    return !(m_current == rhs.m_current);
+  }
 
 private:
-	NodePointerType m_current;
-	unsigned int m_depth;
+  NodePointerType m_current;
+  unsigned int m_depth;
 };
-
 
 //
 //inline bool
@@ -412,7 +422,6 @@ private:
 //operator>=(const DFSPreOrderIterator& a, const DFSPreOrderIterator& b)
 //	{ return !(a.base() < b.base()); }
 
-
 //DFSPreOrderIterator::DFSPreOrderIterator()
 //:	m_current(value_type())
 //{
@@ -422,8 +431,6 @@ private:
 //:	m_current(nodePointer)
 //{
 //}
-
-
 
 //
 //using std::iterator_traits;
@@ -515,7 +522,6 @@ private:
 //   };
 //
 //
-
 
 //// stl_list.h
 ///**
@@ -688,8 +694,5 @@ private:
 //    operator!=(const _List_iterator<_Val>& __x,
 //               const _List_const_iterator<_Val>& __y)
 //    { return __x._M_node != __y._M_node; }
-
-
-
 
 #endif /* TREEITERATORS_H_ */

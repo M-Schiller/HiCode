@@ -13,12 +13,14 @@
 // Time	    : February 2008
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
+#pragma once
 
 #ifndef COMMUNITY_H
 #define COMMUNITY_H
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -27,37 +29,36 @@
 
 #include "graph_binary.h"
 
-using namespace std;
-
-class Community {
- public:
-  vector<double> neigh_weight;
-  vector<unsigned int> neigh_pos;
+class Community
+{
+public:
+  std::vector<double> m_neighborWeights;
+  std::vector<unsigned int> m_neighPositions;
   unsigned int neigh_last;
 
-  Graph g; // network to compute communities for
-  int size; // nummber of nodes in the network and size of all vectors
-  vector<int> n2c; // community to which each node belongs
-  vector<double> in,tot; // used to compute the modularity participation of each community
+  Graph m_graph; // network to compute communities for
+  int m_Size; // nummber of nodes in the network and size of all vectors
+  std::vector<int> m_node2communityMap; // community to which each node belongs
+  std::vector<double> in, tot; // used to compute the modularity participation of each community
 
   // number of pass for one level computation
   // if -1, compute as many pass as needed to increase modularity
-  int nb_pass;
+  int m_numberPasses;
 
-  // a new pass is computed if the last one has generated an increase 
+  // a new pass is computed if the last one has generated an increase
   // greater than min_modularity
   // if 0. even a minor increase is enough to go for one more pass
-  double min_modularity;
+  double m_minModularity;
 
   // constructors:
   // reads graph from file using graph constructor
   // type defined the weighted/unweighted status of the graph file
-  Community (char *filename, char *filename_w, int type, int nb_pass, double min_modularity);
+  Community(char *filename, char *filename_w, int type, int nb_pass, double min_modularity);
   // copy graph
-  Community (Graph g, int nb_pass, double min_modularity);
+  Community(Graph g, int nb_pass, double min_modularity);
 
   // initiliazes the partition with something else than all nodes alone
-  void init_partition(char *filename_part);
+  void init_partition(char * filename);
 
   // display the community of each node
   void display();
@@ -99,35 +100,34 @@ class Community {
   bool one_level();
 };
 
-inline void
-Community::remove(int node, int comm, double dnodecomm) {
-  assert(node>=0 && node<size);
+inline void Community::remove(int node, int comm, double dnodecomm)
+{
+  assert(node >= 0 && node < m_Size);
 
-  tot[comm] -= g.weighted_degree(node);
-  in[comm]  -= 2*dnodecomm + g.nb_selfloops(node);
-  n2c[node]  = -1;
+  tot[comm] -= m_graph.getWeightedDegree(node);
+  in[comm] -= 2 * dnodecomm + m_graph.getNumberOfSelfLoops(node);
+  m_node2communityMap[node] = -1;
 }
 
-inline void
-Community::insert(int node, int comm, double dnodecomm) {
-  assert(node>=0 && node<size);
+inline void Community::insert(int node, int comm, double dnodecomm)
+{
+  assert(node >= 0 && node < m_Size);
 
-  tot[comm] += g.weighted_degree(node);
-  in[comm]  += 2*dnodecomm + g.nb_selfloops(node);
-  n2c[node]=comm;
+  tot[comm] += m_graph.getWeightedDegree(node);
+  in[comm] += 2 * dnodecomm + m_graph.getNumberOfSelfLoops(node);
+  m_node2communityMap[node] = comm;
 }
 
-inline double
-Community::modularity_gain(int node, int comm, double dnodecomm, double w_degree) {
-  assert(node>=0 && node<size);
+inline double Community::modularity_gain(int node, int comm, double dnodecomm, double w_degree)
+{
+  assert(node >= 0 && node < m_Size);
 
-  double totc = (double)tot[comm];
-  double degc = (double)w_degree;
-  double m2   = (double)g.total_weight;
-  double dnc  = (double)dnodecomm;
-  
-  return (dnc - totc*degc/m2);
+  double totc = tot[comm];
+  double degc = w_degree;
+  double m2 = m_graph.total_weight;
+  double dnc = dnodecomm;
+
+  return (dnc - totc * degc / m2);
 }
-
 
 #endif // COMMUNITY_H

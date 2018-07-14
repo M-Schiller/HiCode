@@ -1,14 +1,15 @@
-#if !defined(STANDARD_INCLUDE_INCLUDED)
-#define STANDARD_INCLUDE_INCLUDED	
+#pragma once
 
+#ifndef STANDARD_INCLUDE_INCLUDED
+#define STANDARD_INCLUDE_INCLUDED
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <deque>
 #include <set>
 #include <vector>
 #include <map>
-#include <string> 
+#include <string>
 #include <fstream>
 #include <ctime>
 #include <iterator>
@@ -17,18 +18,7 @@
 #include <queue>
 #include <list>
 
-using namespace std;
-
-
-
-typedef unsigned int UI;
-typedef deque<double> DD;
-typedef deque<int> DI;
-typedef deque<deque<int> > int_matrix;
-
-
-
-
+typedef std::deque<std::deque<int>> int_matrix;
 
 #include "cast.cpp"
 #include "print.cpp"
@@ -40,5 +30,11 @@ typedef deque<deque<int> > int_matrix;
 #include "mutual.cpp"
 #include "pajek.cpp"
 
+inline void systemCall(const std::string& cmd)
+{
+  std::cerr << "Call: " << cmd;
+  const int res = system(cmd.c_str());
+  std::cerr << " returned " << res << "." << std::endl;
+}
 
 #endif

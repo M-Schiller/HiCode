@@ -6,9 +6,9 @@ visual_folder=$Main_folder/visualSources
 echo ""
 echo "Compiling louvain  method ..."
 cd $Main_folder/louvain/
-g++ script_to_compile.cpp
+g++ script_to_compile.cpp -std=c++1z
 ./a.out
-g++ -o louvain_script order.cpp -O3
+g++ -o louvain_script order.cpp -std=c++1z -O3
 cd ../..
 mv $Main_folder/louvain/louvain_script .
 mv $Main_folder/louvain/community .

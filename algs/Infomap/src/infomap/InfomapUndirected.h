@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -23,21 +22,21 @@
  along with Infomap software package.  If not, see <http://www.gnu.org/licenses/>.
 
 **********************************************************************************/
-
+#pragma once
 
 #ifndef INFOMAPUNDIRECTED_H_
 #define INFOMAPUNDIRECTED_H_
 #include "InfomapGreedy.h"
+
 #include "flowData.h"
 
 class InfomapUndirected : public InfomapGreedy<InfomapUndirected>
 {
-	friend class InfomapGreedy<InfomapUndirected>;
-	typedef Node<FlowType>							NodeType;
+  friend class InfomapGreedy<InfomapUndirected>;
+  typedef Node<FlowType>							NodeType;
 public:
-	InfomapUndirected(const Config& conf) : InfomapGreedy<InfomapUndirected>(conf) {}
-	virtual ~InfomapUndirected() {}
-
+  InfomapUndirected(const Config& conf) : InfomapGreedy<InfomapUndirected>(conf) {}
+  virtual ~InfomapUndirected() {}
 };
 
 #endif /* INFOMAPUNDIRECTED_H_ */

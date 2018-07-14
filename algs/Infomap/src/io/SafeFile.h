@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -24,23 +23,23 @@
 
 **********************************************************************************/
 
+#pragma once
 
 #ifndef SAFEFILE_H_
 #define SAFEFILE_H_
+
 #include <iostream>
 #include <fstream>
 #include <ios>
 #include <stdexcept>
 #include "convert.h"
 
-using std::ifstream;
-using std::ofstream;
-
-class FileOpenError : public std::runtime_error {
+class FileOpenError : public std::runtime_error
+{
 public:
-	FileOpenError(std::string const& s)
-	: std::runtime_error(s)
-	{ }
+  FileOpenError(std::string const& s)
+    : std::runtime_error(s)
+  {}
 };
 
 /**
@@ -57,135 +56,130 @@ public:
  * called Resource Acquisition Is Initialization (RAII).
  *
  */
-class SafeInFile : public ifstream
+class SafeInFile : public std::ifstream
 {
 public:
-	SafeInFile(const char* filename, ios_base::openmode mode = ios_base::in)
-	: ifstream(filename, mode)
-	{
-		if (fail())
-			throw FileOpenError(io::Str() << "Error opening file '" << filename <<
-					"'. Check that the path points to a file and that you have read permissions.");
-	}
+  SafeInFile(const char* filename, ios_base::openmode mode = ios_base::in)
+    : std::ifstream(filename, mode)
+  {
+    if (fail())
+      throw FileOpenError(io::Str() << "Error opening file '" << filename <<
+        "'. Check that the path points to a file and that you have read permissions.");
+  }
 
-	~SafeInFile()
-	{
-		if (is_open())
-			close();
-	}
+  ~SafeInFile()
+  {
+    if (is_open())
+      close();
+  }
 };
 
-class SafeOutFile : public ofstream
+class SafeOutFile : public std::ofstream
 {
 public:
-	SafeOutFile(const char* filename, ios_base::openmode mode = ios_base::out)
-	: ofstream(filename, mode)
-	{
-		if (fail())
-			throw FileOpenError(io::Str() << "Error opening file '" << filename <<
-					"'. Check that the directory you are writing to exists and that you have write permissions.");
-	}
+  SafeOutFile(const char* filename, ios_base::openmode mode = ios_base::out)
+    : std::ofstream(filename, mode)
+  {
+    if (fail())
+      throw FileOpenError(io::Str() << "Error opening file '" << filename <<
+        "'. Check that the directory you are writing to exists and that you have write permissions.");
+  }
 
-	~SafeOutFile()
-	{
-		if (is_open())
-			close();
-	}
+  ~SafeOutFile()
+  {
+    if (is_open())
+      close();
+  }
 };
-
 
 template<typename T>
 struct BinaryHelper {
-	static size_t write(T value, std::FILE* file)
-	{
-		return fwrite(reinterpret_cast<const char*>(&value), sizeof(value), 1, file);
-	}
+  static size_t write(T value, std::FILE* file)
+  {
+    return fwrite(reinterpret_cast<const char*>(&value), sizeof(value), 1, file);
+  }
 
-	static size_t read(T& value, ifstream& ifstream)
-	{
-		size_t size = sizeof(value);
-		ifstream.read(reinterpret_cast<char*>(&value), size);
-		return size;
-	}
+  static size_t read(T& value, std::ifstream& ifstream)
+  {
+    size_t size = sizeof(value);
+    ifstream.read(reinterpret_cast<char*>(&value), size);
+    return size;
+  }
 };
 
 template<>
-struct BinaryHelper<std::string> {
-	static size_t write(std::string value, std::FILE* file)
-	{
-		unsigned short stringLength = static_cast<unsigned short>(value.length());
-		fwrite(&stringLength, sizeof(stringLength), 1, file);
-		return fwrite(value.c_str(), sizeof(char), value.length(), file);
-	}
+struct BinaryHelper<std::string>
+{
+  static size_t write(std::string value, std::FILE* file)
+  {
+    auto stringLength = static_cast<unsigned short>(value.length());
+    fwrite(&stringLength, sizeof(stringLength), 1, file);
+    return fwrite(value.c_str(), sizeof(char), value.length(), file);
+  }
 
-	static size_t read(std::string& value, ifstream& ifstream)
-	{
-		unsigned short stringLength;
-		size_t size = sizeof(stringLength);
-		ifstream.read(reinterpret_cast<char*>(&stringLength), size);
-		if (stringLength > 0)
-		{
-			char cstr[stringLength];
-			ifstream.read(cstr, stringLength);
-			std::string str(cstr, stringLength);
-			value.swap(str);
-		}
-		return size + sizeof(char) * stringLength;
-	}
+  static size_t read(std::string& value, std::ifstream& ifstream)
+  {
+    unsigned short stringLength;
+    size_t size = sizeof(stringLength);
+    ifstream.read(reinterpret_cast<char*>(&stringLength), size);
+    if (stringLength > 0)
+    {
+      char cstr[stringLength];
+      ifstream.read(cstr, stringLength);
+      std::string str(cstr, stringLength);
+      value.swap(str);
+    }
+    return size + sizeof(char) * stringLength;
+  }
 };
 
-#include <stddef.h>
-
-class ofstream_binary : public ofstream
+class ofstream_binary : public std::ofstream
 {
 public:
-	ofstream_binary(const char* filename)
-		: ofstream(filename, ios_base::out | ios_base::trunc | ios_base::binary), m_size(0) {}
+  ofstream_binary(const char* filename)
+    : std::ofstream(filename, ios_base::out | ios_base::trunc | ios_base::binary), m_size(0) {}
 
-	template<typename T>
-	ofstream_binary& operator<<(T value)
-	{
-		size_t size = sizeof(value);
-		m_size += size;
-		write(reinterpret_cast<const char*>(&value), size);
-		return *this;
-	}
+  template<typename T>
+  ofstream_binary& operator<<(T value)
+  {
+    size_t size = sizeof(value);
+    m_size += size;
+    write(reinterpret_cast<const char*>(&value), size);
+    return *this;
+  }
 
-	size_t size()
-	{
-		return m_size;
-	}
+  size_t size()
+  {
+    return m_size;
+  }
 
 protected:
-	size_t m_size;
+  size_t m_size;
 };
 
-
-class ifstream_binary : public ifstream
+class ifstream_binary : public std::ifstream
 {
 public:
-	ifstream_binary(const char* filename)
-		: ifstream(filename, ios_base::in | ios_base::binary), m_sizeRead(0) {}
+  ifstream_binary(const char* filename)
+    : std::ifstream(filename, ios_base::in | ios_base::binary), m_sizeRead(0) {}
 
-	template<typename T>
-	ifstream_binary& operator>>(T& value)
-	{
-		m_sizeRead += BinaryHelper<T>::read(value, *this);
-		return *this;
-	}
+  template<typename T>
+  ifstream_binary& operator>>(T& value)
+  {
+    m_sizeRead += BinaryHelper<T>::read(value, *this);
+    return *this;
+  }
 
-	size_t sizeRead()
-	{
-		return m_sizeRead;
-	}
+  size_t sizeRead()
+  {
+    return m_sizeRead;
+  }
 
 protected:
-	size_t m_sizeRead;
+  size_t m_sizeRead;
 };
-
 
 #include <cstdio>
-
 
 /**
  * Wrapper class for writing low-level binary data with a simple stream interface.
@@ -194,77 +188,75 @@ protected:
  */
 class SafeBinaryOutFile {
 public:
-	SafeBinaryOutFile (const char* filename)
-	: m_file(std::fopen(filename, "w"))
-	{
-        if (!m_file)
-            throw std::runtime_error("file open failure");
+  SafeBinaryOutFile(const char* filename)
+    : m_file(std::fopen(filename, "w"))
+  {
+    if (!m_file)
+      throw std::runtime_error("file open failure");
+  }
+
+  ~SafeBinaryOutFile() {
+    if (std::fclose(m_file)) {
+      // failed to flush latest changes.
+      // handle it
     }
+  }
 
-    ~SafeBinaryOutFile() {
-        if (std::fclose(m_file)) {
-           // failed to flush latest changes.
-           // handle it
-        }
-    }
+  template<typename T>
+  SafeBinaryOutFile& operator<<(T value)
+  {
+    BinaryHelper<T>::write(value, m_file);
+    return *this;
+  }
 
-    template<typename T>
-    SafeBinaryOutFile& operator<<(T value)
-	{
-    	BinaryHelper<T>::write(value, m_file);
-    	return *this;
-	}
+  /**
+   * Return the number of bytes written to the file stream
+   */
+  size_t size()
+  {
+    return ftell(m_file);
+  }
 
-    /**
-     * Return the number of bytes written to the file stream
-     */
-	size_t size()
-	{
-		return ftell(m_file);
-	}
+  // prevent copying and assignment; not implemented
+  SafeBinaryOutFile(const SafeBinaryOutFile &) = delete;
+  SafeBinaryOutFile & operator= (const SafeBinaryOutFile &) = delete;
 
 private:
-    std::FILE* m_file;
-
-    // prevent copying and assignment; not implemented
-	SafeBinaryOutFile (const SafeBinaryOutFile &);
-	SafeBinaryOutFile & operator= (const SafeBinaryOutFile &);
+  std::FILE* m_file;
 };
 
 class SafeOutFileBinary : public ofstream_binary
 {
 public:
-	SafeOutFileBinary(const char* filename)
-	: ofstream_binary(filename)
-	{
-		if (fail())
-			throw FileOpenError(io::Str() << "Error opening file '" << filename << "'");
-	}
+  SafeOutFileBinary(const char* filename)
+    : ofstream_binary(filename)
+  {
+    if (fail())
+      throw FileOpenError(io::Str() << "Error opening file '" << filename << "'");
+  }
 
-	~SafeOutFileBinary()
-	{
-		if (is_open())
-			close();
-	}
-
+  ~SafeOutFileBinary()
+  {
+    if (is_open())
+      close();
+  }
 };
 
 class SafeBinaryInFile : public ifstream_binary
 {
 public:
-	SafeBinaryInFile(const char* filename)
-	: ifstream_binary(filename)
-	{
-		if (fail())
-			throw FileOpenError(io::Str() << "Error opening file '" << filename << "'");
-	}
+  SafeBinaryInFile(const char* filename)
+    : ifstream_binary(filename)
+  {
+    if (fail())
+      throw FileOpenError(io::Str() << "Error opening file '" << filename << "'");
+  }
 
-	~SafeBinaryInFile()
-	{
-		if (is_open())
-			close();
-	}
-
+  ~SafeBinaryInFile()
+  {
+    if (is_open())
+      close();
+  }
 };
 
 #endif /* SAFEFILE_H_ */

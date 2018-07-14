@@ -1,7 +1,7 @@
 // File: graph_binary.h
 // -- graph handling header file
 //-----------------------------------------------------------------------------
-// Community detection 
+// Community detection
 // Based on the article "Fast unfolding of community hierarchies in large networks"
 // Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
 //
@@ -13,14 +13,14 @@
 // Time	    : February 2008
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
+#pragma once
 
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include <malloc.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -31,17 +31,16 @@
 #define WEIGHTED   0
 #define UNWEIGHTED 1
 
-using namespace std;
-
-class Graph {
- public:
+class Graph
+{
+public:
   unsigned int nb_nodes;
   unsigned long nb_links;
-  double total_weight;  
+  double total_weight;
 
-  vector<unsigned long> degrees;
-  vector<unsigned int> links;
-  vector<float> weights;
+  std::vector<unsigned long> degrees;
+  std::vector<unsigned int> links;
+  std::vector<float> weights;
 
   Graph();
 
@@ -53,82 +52,85 @@ class Graph {
   // 4*(sum_degrees) bytes for the links
   // IF WEIGHTED 4*(sum_degrees) bytes for the weights in a separate file
   Graph(char *filename, char *filename_w, int type);
-  
+
   Graph(int nb_nodes, int nb_links, double total_weight, int *degrees, int *links, float *weights);
 
-  void display(void);
-  void display_reverse(void);
+  void display();
+  void display_reverse();
   void display_binary(char *outfile);
   bool check_symmetry();
 
-
   // return the number of neighbors (degree) of the node
-  inline unsigned int nb_neighbors(unsigned int node);
+  inline unsigned int getDegree(unsigned int node);
 
   // return the number of self loops of the node
-  inline double nb_selfloops(unsigned int node);
+  inline double getNumberOfSelfLoops(unsigned int node);
 
   // return the weighted degree of the node
-  inline double weighted_degree(unsigned int node);
+  inline double getWeightedDegree(unsigned int node);
 
   // return pointers to the first neighbor and first weight of the node
-  inline pair<vector<unsigned int>::iterator, vector<float>::iterator > neighbors(unsigned int node);
+  inline std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator > neighbors(unsigned int node);
 };
 
+unsigned int Graph::getDegree(unsigned int node)
+{
+  assert(node >= 0 && node < nb_nodes);
 
-inline unsigned int
-Graph::nb_neighbors(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
-
-  if (node==0)
+  if (node == 0)
+  {
     return degrees[0];
-  else
-    return degrees[node]-degrees[node-1];
+  }
+  return degrees[node] - degrees[node - 1];
 }
 
-inline double
-Graph::nb_selfloops(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+double Graph::getNumberOfSelfLoops(unsigned int node)
+{
+  assert(node >= 0 && node < nb_nodes);
 
-  pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
-  for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
-    if (*(p.first+i)==node) {
-      if (weights.size()!=0)
-	return (double)*(p.second+i);
-      else 
-	return 1.;
+  std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator > p = neighbors(node);
+  for (unsigned int i = 0; i < getDegree(node); i++)
+  {
+    if (*(p.first + i) == node)
+    {
+      if (weights.size() != 0)
+      {
+        return (double)*(p.second + i);
+      }
+      return 1.;
     }
   }
   return 0.;
 }
 
-inline double
-Graph::weighted_degree(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+double Graph::getWeightedDegree(unsigned int node)
+{
+  assert(node >= 0 && node < nb_nodes);
 
-  if (weights.size()==0)
-    return (double)nb_neighbors(node);
-  else {
-    pair<vector<unsigned int>::iterator, vector<float>::iterator > p = neighbors(node);
-    double res = 0;
-    for (unsigned int i=0 ; i<nb_neighbors(node) ; i++) {
-      res += (double)*(p.second+i);
-    }
-    return res;
+  if (weights.empty())
+    return (double)getDegree(node);
+  std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator > p = neighbors(node);
+  double res = 0;
+  for (unsigned int i = 0; i < getDegree(node); i++)
+  {
+    res += (double)*(p.second + i);
   }
+  return res;
 }
 
-inline pair<vector<unsigned int>::iterator, vector<float>::iterator >
-Graph::neighbors(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+std::pair<std::vector<unsigned int>::iterator, std::vector<float>::iterator> Graph::neighbors(unsigned int node)
+{
+  assert(node >= 0 && node < nb_nodes);
 
-  if (node==0)
-    return make_pair(links.begin(), weights.begin());
-  else if (weights.size()!=0)
-    return make_pair(links.begin()+degrees[node-1], weights.begin()+degrees[node-1]);
-  else
-    return make_pair(links.begin()+degrees[node-1], weights.begin());
+  if (node == 0)
+  {
+    return std::make_pair(links.begin(), weights.begin());
+  }
+  if (weights.size() != 0)
+  {
+    return std::make_pair(links.begin() + degrees[node - 1], weights.begin() + degrees[node - 1]);
+  }
+  return std::make_pair(links.begin() + degrees[node - 1], weights.begin());
 }
-
 
 #endif // GRAPH_H

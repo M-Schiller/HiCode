@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -23,15 +22,15 @@
  along with Infomap software package.  If not, see <http://www.gnu.org/licenses/>.
 
 **********************************************************************************/
-
+#pragma once
 
 #ifndef FLOWDATA_TRAITS_H_
 #define FLOWDATA_TRAITS_H_
+
 #include "flowData.h"
 
 // A boolean type as function templates can't be partially specialized.
 template<bool> struct bool2type {};
-
 
 template<typename InfomapType>
 struct flowData_traits;
@@ -44,11 +43,11 @@ class InfomapUndirected;
 template<>
 struct flowData_traits<InfomapUndirected>
 {
-	typedef FlowUndirected		flow_type;
-	typedef bool2type<false>	directed_type;
-	typedef bool2type<true>		detailedBalance_type;
-	static const bool directed = false;
-	static const bool detailed_balance = true;
+  typedef FlowUndirected		flow_type;
+  typedef bool2type<false>	directed_type;
+  typedef bool2type<true>		detailedBalance_type;
+  static const bool directed = false;
+  static const bool detailed_balance = true;
 };
 
 class InfomapDirected;
@@ -56,11 +55,11 @@ class InfomapDirected;
 template<>
 struct flowData_traits<InfomapDirected>
 {
-	typedef FlowDirectedWithTeleportation	flow_type;
-	typedef bool2type<true> 				directed_type;
-	typedef bool2type<true> 				detailedBalance_type;
-	static const bool directed = true;
-	static const bool detailed_balance = true;
+  typedef FlowDirectedWithTeleportation	flow_type;
+  typedef bool2type<true> 				directed_type;
+  typedef bool2type<true> 				detailedBalance_type;
+  static const bool directed = true;
+  static const bool detailed_balance = true;
 };
 
 class InfomapUndirdir;
@@ -68,11 +67,11 @@ class InfomapUndirdir;
 template<>
 struct flowData_traits<InfomapUndirdir>
 {
-	typedef FlowDirectedNonDetailedBalance	flow_type;
-	typedef bool2type<true> 				directed_type;
-	typedef bool2type<false> 				detailedBalance_type;
-	static const bool directed = true;
-	static const bool detailed_balance = false;
+  typedef FlowDirectedNonDetailedBalance	flow_type;
+  typedef bool2type<true> 				directed_type;
+  typedef bool2type<false> 				detailedBalance_type;
+  static const bool directed = true;
+  static const bool detailed_balance = false;
 };
 
 class InfomapDirectedUnrecordedTeleportation;
@@ -80,12 +79,11 @@ class InfomapDirectedUnrecordedTeleportation;
 template<>
 struct flowData_traits<InfomapDirectedUnrecordedTeleportation>
 {
-	typedef FlowDirectedNonDetailedBalanceWithTeleportation	flow_type;
-	typedef bool2type<true> 				directed_type;
-	typedef bool2type<false> 				detailedBalance_type;
-	static const bool directed = true;
-	static const bool detailed_balance = false;
+  typedef FlowDirectedNonDetailedBalanceWithTeleportation	flow_type;
+  typedef bool2type<true> 				directed_type;
+  typedef bool2type<false> 				detailedBalance_type;
+  static const bool directed = true;
+  static const bool detailed_balance = false;
 };
-
 
 #endif /* FLOWDATA_TRAITS_H_ */

@@ -15,33 +15,41 @@
 // see readme.txt for more details
 
 #include "graph.h"
+#include <algorithm>
 
-using namespace std;
+Graph::Graph(char *filename, int type)
+{
+  std::ifstream finput;
+  finput.open(filename, std::fstream::in);
 
-Graph::Graph(char *filename, int type) {
-  ifstream finput;
-  finput.open(filename,fstream::in);
+  int nb_links = 0;
 
-  int nb_links=0;
-
-  while (!finput.eof()) {
+  while (!finput.eof())
+  {
     unsigned int src, dest;
-    double weight=1.;
+    double weight = 1.;
 
-    if (type==WEIGHTED) {
+    if (type == WEIGHTED)
+    {
       finput >> src >> dest >> weight;
-    } else {
+    }
+    else
+    {
       finput >> src >> dest;
     }
-    
-    if (finput) {
-      if (links.size()<=max(src,dest)+1) {
-        links.resize(max(src,dest)+1);
+
+    if (finput)
+    {
+      if (links.size() <= std::max(src, dest) + 1)
+      {
+        links.resize(std::max(src, dest) + 1);
       }
-      
-      links[src].push_back(make_pair(dest,weight));
-      if (src!=dest)
-        links[dest].push_back(make_pair(src,weight));
+
+      links[src].emplace_back(dest, weight);
+      if (src != dest)
+      {
+        links[dest].emplace_back(src, weight);
+      }
 
       nb_links++;
     }
@@ -50,108 +58,129 @@ Graph::Graph(char *filename, int type) {
   finput.close();
 }
 
-void
-Graph::renumber(int type) {
-  vector<int> linked(links.size(),-1);
-  vector<int> renum(links.size(),-1);
-  int nb=0;
-  
-  for (unsigned int i=0 ; i<links.size() ; i++) {
-    for (unsigned int j=0 ; j<links[i].size() ; j++) {
-      linked[i]=1;
-      linked[links[i][j].first]=1;
+void Graph::renumber(int type)
+{
+  std::vector<int> linked(links.size(), -1);
+  std::vector<int> renum(links.size(), -1);
+  int nb = 0;
+
+  for (unsigned int i = 0; i < links.size(); ++i)
+  {
+    for (unsigned int j = 0; j < links[i].size(); ++j)
+    {
+      linked[i] = 1;
+      linked[links[i][j].first] = 1;
     }
   }
-  
-  for (unsigned int i=0 ; i<links.size() ; i++) {
-    if (linked[i]==1)
-      renum[i]=nb++;
+
+  for (unsigned int i = 0; i < links.size(); i++) {
+    if (linked[i] == 1)
+      renum[i] = nb++;
   }
 
-  for (unsigned int i=0 ; i<links.size() ; i++) {
-    if (linked[i]==1) {
-      for (unsigned int j=0 ; j<links[i].size() ; j++) {
-	links[i][j].first = renum[links[i][j].first];
+  for (unsigned int i = 0; i < links.size(); ++i)
+  {
+    if (linked[i] == 1)
+    {
+      for (auto& j : links[i])
+      {
+        j.first = renum[j.first];
       }
-      links[renum[i]]=links[i];
+      links[renum[i]] = links[i];
     }
   }
   links.resize(nb);
 }
 
-void
-Graph::clean(int type) {
-  for (unsigned int i=0 ; i<links.size() ; i++) {
-    map<int, float> m;
-    map<int, float>::iterator it;
+void Graph::clean(int type)
+{
+  for (auto& link : links)
+  {
+    std::map<int, float> m;
+    std::map<int, float>::iterator it;
 
-    for (unsigned int j=0 ; j<links[i].size() ; j++) {
-      it = m.find(links[i][j].first);
-      if (it==m.end())
-	m.insert(make_pair(links[i][j].first, links[i][j].second));
-      else if (type==WEIGHTED)
-      	it->second+=links[i][j].second;
+    for (auto& i : link)
+    {
+      it = m.find(i.first);
+      if (it == m.end())
+      {
+        m.insert(i);
+      }
+      else if (type == WEIGHTED)
+      {
+        it->second += i.second;
+      }
     }
-    
-    vector<pair<int,float> > v;
-    for (it = m.begin() ; it!=m.end() ; it++)
-      v.push_back(*it);
-    links[i].clear();
-    links[i]=v;
+
+    std::vector<std::pair<int, float>> v;
+    for (it = m.begin(); it != m.end(); ++it)
+    {
+      v.emplace_back(*it);
+    }
+    link.clear();
+    link = v;
   }
 }
 
-void
-Graph::display(int type) {
-  for (unsigned int i=0 ; i<links.size() ; i++) {
-    for (unsigned int j=0 ; j<links[i].size() ; j++) {
-      int dest   = links[i][j].first;
-      float weight = links[i][j].second;
-      if (type==WEIGHTED)
-	cout << i << " " << dest << " " << weight << endl;
+void Graph::display(int type)
+{
+  for (unsigned int i = 0; i < links.size(); ++i)
+  {
+    for (unsigned int j = 0; j < links[i].size(); ++j)
+    {
+      const int dest = links[i][j].first;
+      const float weight = links[i][j].second;
+      if (type == WEIGHTED)
+      {
+        std::cout << i << " " << dest << " " << weight << std::endl;
+      }
       else
-	cout << i << " " << dest << endl;
+      {
+        std::cout << i << " " << dest << std::endl;
+      }
     }
   }
 }
 
-void
-Graph::display_binary(char *filename, char *filename_w, int type) {
-  ofstream foutput;
-  foutput.open(filename, fstream::out | fstream::binary);
+void Graph::display_binary(char *filename, char *filename_w, int type)
+{
+  std::ofstream foutput;
+  foutput.open(filename, std::fstream::out | std::fstream::binary);
 
   unsigned int s = links.size();
 
   // outputs number of nodes
-  foutput.write((char *)(&s),4);
+  foutput.write(reinterpret_cast<char *>(&s), 4);
 
   // outputs cumulative degree sequence
-  long tot=0;
-  for (unsigned int i=0 ; i<s ; i++) {
-    tot+=(long)links[i].size();
-    foutput.write((char *)(&tot),8);
+  long tot = 0;
+  for (unsigned int i = 0; i < s; i++)
+  {
+    tot += static_cast<long>(links[i].size());
+    foutput.write(reinterpret_cast<char *>(&tot), 8);
   }
 
   // outputs links
-  for (unsigned int i=0 ; i<s ; i++) {
-    for (unsigned int j=0 ; j<links[i].size() ; j++) {
-      int dest = links[i][j].first;
-      foutput.write((char *)(&dest),4);
+  for (auto & link : links)
+  {
+    for (auto& j : link)
+    {
+      foutput.write(reinterpret_cast<char *>(&j.first), 4);
     }
   }
   foutput.close();
 
   // outputs weights in a separate file
-  if (type==WEIGHTED) {
-    ofstream foutput_w;
-    foutput_w.open(filename_w,fstream::out | fstream::binary);
-    for (unsigned int i=0 ; i<s ; i++) {
-      for (unsigned int j=0 ; j<links[i].size() ; j++) {
-	float weight = links[i][j].second;
-	foutput_w.write((char *)(&weight),4);
+  if (type == WEIGHTED) {
+    std::ofstream foutput_w;
+    foutput_w.open(filename_w, std::fstream::out | std::fstream::binary);
+    for (auto& link : links)
+    {
+      for (auto& j : link)
+      {
+        foutput_w.write(reinterpret_cast<char *>(&j.second), 4);
       }
     }
     foutput_w.close();
   }
 }
-

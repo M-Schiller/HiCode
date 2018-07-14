@@ -447,3 +447,42 @@ ASALocalRun/
 
 
 # End of https://www.gitignore.io/api/c++,cmake,clion,visualstudio
+
+*.gen
+
+*.tex
+
+# Ignore created folders
+
+result/
+
+# Ignore generated and built files
+
+algs/Infomap/Infomap
+algs/link_clustering/callCluster
+algs/link_clustering/dataTrans
+algs/link_clustering/calcAndWrite_Jaccards
+algs/Modularity/community
+algs/Modularity/convert
+algs/Modularity/hierarchy
+algs/OSLOM2/community
+algs/OSLOM2/convert
+algs/OSLOM2/hierarchy
+algs/OSLOM2/infomap_dir
+algs/OSLOM2/infomap_dir_script
+algs/OSLOM2/infomap_undir
+algs/OSLOM2/infomap_undir_script
+algs/OSLOM2/louvain_script
+algs/OSLOM2/oslom_dir
+algs/OSLOM2/oslom_undir
+algs/OSLOM2/pajek_write_dir
+algs/OSLOM2/pajek_write_undir
+algs/OSLOM2/Sources_2_5/louvain/list_out
+algs/OSLOM2/Sources_2_5/infomap_undir/infomap
+
+Cur_vs_Pre
+Truth_vs_layer
+Main
+
+/*.pdf
+

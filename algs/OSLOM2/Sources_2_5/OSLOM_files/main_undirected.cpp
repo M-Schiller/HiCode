@@ -1,7 +1,4 @@
-
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                               *
@@ -25,69 +22,49 @@
  *  Location: ISI foundation, Turin, Italy                                       *
  *                                                                               *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
- 
-#include "standard_package/standard_include.cpp"
 
+#include "standard_package/standard_include.cpp"
 
 #include "log_table.h"
 
+double log_fact_table::right_cumulative_function(int k1, int k2, int tm, int x)
+{
+  if (x > k1 || x > k2)
+    return 0;
 
+  if (k1*k1 < tm)
+    return cum_hyper_right(x, k2, tm, k1);
 
+  // k1 is the degree of the node
+  // k2 is the degree of the other node (the bigger)
+  // k3 is 2m - k1 - k2
 
+  int k3 = tm - k1;
 
-double log_fact_table::right_cumulative_function(int k1, int k2, int tm, int x) {
+  int H = (k3 - k1 - k2) / 2;
+  int l1 = std::max(0, -H);
 
-	if(x>k1 || x>k2)
-		return 0;
-	
-	
-	if(k1*k1<tm)
-		return cum_hyper_right(x, k2, tm, k1);
-	
-	
-	// k1 is the degree of the node
-	// k2 is the degree of the other node (the bigger)
-	// k3 is 2m - k1 - k2
-	
-	
-	int k3=tm -k1;
-	
-	int H=(k3 - k1 -k2) /2;
-	int l1=max(0, -H);
-	
-	if(x==l1)
-		return 1;
-	
-	
-	int mode= max(cast_int( k2 / double(k1+k3) * k1), l1);		// this mode in underestimated anyway
-	if(mode>k2)
-		mode=k2;
-	
-	//cout<<"mode: "<<mode<<endl;
-	if(x<mode)
-		return cum_hyper_right(x, k2, tm, k1);
-	
-	
-	return fast_right_cum_symmetric_eq(k1, k2, H, x, mode, tm);
+  if (x == l1)
+    return 1;
 
+  int mode = std::max(cast_int(k2 / double(k1 + k3) * k1), l1);		// this mode in underestimated anyway
+  if (mode > k2)
+    mode = k2;
+
+  //cout<<"mode: "<<mode<< std::endl;
+  if (x < mode)
+    return cum_hyper_right(x, k2, tm, k1);
+
+  return fast_right_cum_symmetric_eq(k1, k2, H, x, mode, tm);
 }
-
-
-
-
-
 
 #include "set_parameters.h"
 
 log_fact_table LOG_TABLE;
 Parameters paras;
 
-
-
 #include "module_collection.h"
 #include "undir_weighted_tabdeg.h"
-
-
 
 #include "undirected_network.h"
 #include "louvain_oslomnet.h"
@@ -97,40 +74,11 @@ Parameters paras;
 
 #include "hierarchies.h"
 
-
-
-
-
-
-void program_statement(char * b) {
-	
-	
-	cout<<"\n\n\n***************************************************************************************************************************************************"<<endl;
-
-	cout<<"This program implements the OSLO-method for undirected networks"<<endl;
-	
-		
-	general_program_statement(b);
-	
-	
-	
+void program_statement(char * b)
+{
+  std::cout << "\n\n\n***************************************************************************************************************************************************" << std::endl;
+  std::cout << "This program implements the OSLO-method for undirected networks" << std::endl;
+  general_program_statement(b);
 }
 
-
-
-
-
-
-
-
 #include "main_body.cpp"
-
-
-
-
-
-
-
-
-
-

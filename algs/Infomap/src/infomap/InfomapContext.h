@@ -3,9 +3,8 @@
  Infomap software package for multi-level network clustering
 
  Copyright (c) 2013 Daniel Edler, Martin Rosvall
- 
+
  For more information, see <http://www.mapequation.org>
- 
 
  This file is part of Infomap software package.
 
@@ -23,10 +22,11 @@
  along with Infomap software package.  If not, see <http://www.gnu.org/licenses/>.
 
 **********************************************************************************/
-
+#pragma once
 
 #ifndef INFOMAPCONTEXT_H_
 #define INFOMAPCONTEXT_H_
+
 #include "../io/Config.h"
 #include "InfomapBase.h"
 #include <memory>
@@ -34,16 +34,16 @@
 class InfomapContext
 {
 public:
-	InfomapContext(const Config& config);
+  InfomapContext(const Config& config);
 
-	const std::auto_ptr<InfomapBase>& getInfomap() const
-	{
-		return m_infomap;
-	}
+  const std::auto_ptr<InfomapBase>& getInfomap() const
+  {
+    return m_infomap;
+  }
 
 private:
-	const Config& m_config;
-	std::auto_ptr<InfomapBase> m_infomap;
+  const Config& m_config;
+  std::auto_ptr<InfomapBase> m_infomap;
 };
 
 #endif /* INFOMAPCONTEXT_H_ */
